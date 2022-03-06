@@ -1,8 +1,14 @@
 # libLogHelper
 Library necessary to radiation experiments
 Library in charge to log benchmark data. This library will be used together the benchmark in execution, inside the benchmark source code.
-The main functions of log_helper are:
 
+# Dependencies
+- CMake >=3.16
+- GCC with std=C11
+- SWIG for Python applications
+
+# Getting started
+The library contains the following functions to be included in your app.
 ```C
 /**
 * Set the max errors that can be found for a single iteration
@@ -83,7 +89,7 @@ void update_timestamp();
 char *get_log_file_name();
 ```
 
-# Building libLogHelper
+## Building libLogHelper
 
 ```shell
 cd libLogHelper
