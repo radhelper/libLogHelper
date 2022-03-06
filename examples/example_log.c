@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "../log_helper.h"
+#include "log_helper.h"
 
 int main() {
 

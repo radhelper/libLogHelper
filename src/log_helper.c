@@ -185,7 +185,13 @@ int check_ecc_status() {
     FILE *ecc_info_file = fopen(ecc_info_path, "r");
     int ecc_status = 0;
     if (ecc_info_file) {
-        fscanf(ecc_info_file, "%d", &ecc_status);
+        int ret = fscanf(ecc_info_file, "%d", &ecc_status);
+        if (ret != 1) {
+#ifdef DEBUG
+            fprintf(stderr, "ERROR ON READING THE ECC INFO FILE %s at %s:%d\n",
+                    ecc_info_path, __FILE__, __LINE__);
+#endif
+        }
         fclose(ecc_info_file);
     }
     return ecc_status;
@@ -195,7 +201,12 @@ int check_ecc_status() {
  *  Update with current timestamp the file where the software watchdog watches
  */
 void update_timestamp() {
-    system(signal_cmd);
+    int sys_ret = system(signal_cmd);
+    if (sys_ret == -1) {
+#ifdef DEBUG
+        fprintf(stderr, "ERROR ON SYSTEM CMD %s at %s:%d\n", signal_cmd, __FILE__, __LINE__);
+#endif
+    }
     time_t timestamp = time(NULL);
     FILE *fp = fopen(timestamp_watchdog, "w");
     if (fp) {
@@ -218,7 +229,7 @@ char *get_log_file_name() {
  * @param test_info
  * @return
  */
-int start_log_file(char *benchmark_name, char *test_info) {
+int start_log_file(const char *benchmark_name, const char *test_info) {
     char var_dir[MAX_VALUE_CONFIG_LEN] = "";
 
     int valid_value_config = get_value_config(VAR_DIR_KEY, var_dir);
