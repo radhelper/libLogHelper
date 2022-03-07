@@ -11,6 +11,6 @@ WRAP_FILE=log_helper_wrap.c
 
 log_helper_python: $(SWIG_SOURCE)
 	$(SWIG) $(INCLUDE) -Wall -o $(WRAP_FILE) -python -py3 $(SWIG_SOURCE)
-	$(CC) $(INCLUDE) $(CFLAGS) $(WRAP_FILE) -o _libLogHelper.so $(LDFLAGS) -I$(PYTHON_INCLUDE) -lpython3.8
+	$(CC) $(INCLUDE) $(CFLAGS) $(WRAP_FILE) -o _log_helper.so $(LDFLAGS) -I$(PYTHON_INCLUDE) -lpython3.8
 clean:
 	rm -rf *.o *py *so *pyc $(WRAP_FILE)

@@ -40,3 +40,28 @@ option(WITH_DEBUG "To print debug information" OFF)
 if(WITH_DEBUG)
     add_definitions(-DDEBUG=1)
 endif()
+
+
+# PYTHON Wrapper
+find_package (SWIG)
+include (UseSWIG)
+set (UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
+
+swig_add_library(log_helper
+        TYPE SHARED
+        LANGUAGE python
+        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+        SOURCES python_wrapper/log_helper.i
+        )
+
+find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+set_property(
+        TARGET log_helper
+        PROPERTY INCLUDE_DIRECTORIES ${Python_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+#include_directories(
+#        TARGET log_helper
+#        ${CMAKE_CURRENT_SOURCE_DIR}/include
+#)
