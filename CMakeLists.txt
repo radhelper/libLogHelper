@@ -83,7 +83,10 @@ endif ()
 set(RADIATION_CONF_FILE radiation-benchmarks.conf)
 configure_file(${RADIATION_CONF_FILE}.in ${RADIATION_CONF_FILE} @ONLY)
 add_definitions(-DCONFIG_FILE_PATH="/${CMAKE_INSTALL_SYSCONFDIR}/${RADIATION_CONF_FILE}")
-install(FILES ${CMAKE_BINARY_DIR}/${RADIATION_CONF_FILE} DESTINATION /${CMAKE_INSTALL_SYSCONFDIR})
+install(
+        FILES ${CMAKE_BINARY_DIR}/${RADIATION_CONF_FILE}
+        DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}
+)
 ##############################################################################
 
 # Build examples
