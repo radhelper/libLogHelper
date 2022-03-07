@@ -184,8 +184,6 @@ namespace log_helper {
         ss << std::put_time(std::localtime(&in_time_t), "#BEGIN Y:%Y M:%m D:%d Time:%H:%M:%S")
            << std::endl;
         file_creation_outcome &= file_writer_ptr->write(ss.str());
-
-
         return !file_creation_outcome;
     }
 
