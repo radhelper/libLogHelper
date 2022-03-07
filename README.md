@@ -8,6 +8,32 @@ Library in charge to log benchmark data. This library will be used together the 
 - SWIG for Python applications
 
 # Getting started
+
+To use with C or C++ you have to build the library and then
+link with your code.
+
+## Building libLogHelper
+
+You can set to disable some of the library functionalities:
+- -DWITH_PYTHON_SUPPORT=OFF to disable Python 3.8 wrapper building
+- -DWITH_DEBUG=OFF to disable debug printing information
+
+```shell
+cd libLogHelper
+mkdir build && cd build
+# To build the whole lib
+cmake ..
+make
+```
+If you wish to install in the whole system
+```shell
+sudo make install
+```
+Then to use you just have to build the benchmark with this library use -lLogHelper
+with -I<path_to_this_repo>/include/ -L<path_to_this_repo>/
+(if not installed in the system)
+
+
 The library contains the following functions to be included in your app.
 ```C
 /**
@@ -89,18 +115,4 @@ void update_timestamp();
 char *get_log_file_name();
 ```
 
-## Building libLogHelper
-
-```shell
-cd libLogHelper
-mkdir build && cd build
-cmake -DWITH_DEBUG=OFF ..
-make
-```
-If you wish to install in the whole system
-```shell
-sudo make install
-```
-Then to use you just have to build the benchmark with this library use -lLogHelper
-with -I<path_to_this_repo>/include/ -L<path_to_this_repo>/
-(if not installed in the system)
+To use Python 3.8 lib just call the same name as 

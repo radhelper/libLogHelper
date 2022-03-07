@@ -69,12 +69,12 @@ int log_info_count(unsigned long int info_count);
 /**
  * Print some string with the detail of an error to log file
  */
-int log_error_detail(char *string);
+int log_error_detail(const char *string);
 
 /**
  * Print some string with the detail of an error/information to log file
  */
-int log_info_detail(char *string);
+int log_info_detail(const char *string);
 
 /**
  * Update with current timestamp the file where the software watchdog watches

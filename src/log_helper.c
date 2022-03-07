@@ -267,8 +267,7 @@ int start_log_file(const char *benchmark_name, const char *test_info) {
 
     // ~ Get the host name to add inside the log name.
     char host[35] = "Host";
-    int host_error = 0;
-    host_error = gethostname(host, 35);
+    int host_error = gethostname(host, 35);
 
     if (host_error != 0) {
         fprintf(stderr, "[ERROR in gethostname(char *, int)] Could not access the host name at %s:%d\n",
@@ -508,7 +507,7 @@ int log_info_count(unsigned long int info_count) {
  * @param string
  * @return
  */
-int log_error_detail(char *string) {
+int log_error_detail(const char *string) {
 #pragma omp parallel shared(log_error_detail_count)
     {
 #pragma omp critical
@@ -540,7 +539,7 @@ int log_error_detail(char *string) {
  * @param string
  * @return
  */
-int log_info_detail(char *string) {
+int log_info_detail(const char *string) {
     FILE *file = NULL;
 
 #pragma omp parallel shared(log_info_detail_count)
