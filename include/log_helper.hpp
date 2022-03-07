@@ -19,23 +19,9 @@
 
 #include "common.hpp"
 #include "file_writer.hpp"
+#include "env_vars.h"
 
 namespace log_helper {
-// Config file info
-// Keys to be extracted from config file
-#define LOG_DIR_KEY "logdir"
-#define SIGNAL_CMD_KEY "signalcmd"
-#define VAR_DIR_KEY "vardir"
-// key to load ecc verification data
-#define ECC_INFO_KEY "eccinfofile"
-#define CONFIG_FILE_PATH "/etc/radiation-benchmarks.conf"
-
-// Config for UDP logging
-#define SERVER_IP_KEY "serverip"
-#define SERVER_PORT_KEY "serverport"
-
-// Location of timestamp file for software watchdog
-#define TIMESTAMP_FILE "timestamp.txt"
     // does not change over the time
     // Default path to the config file
     std::unordered_map<std::string, std::string> configuration_parameters;
@@ -64,10 +50,6 @@ namespace log_helper {
     size_t log_error_detail_counter = 0;
     size_t log_info_detail_counter = 0;
     bool double_error_kill = true;
-
-    // Log for local file
-    std::string log_file_path;
-    std::string timestamp_watchdog_path;
 
     // File writer
     std::shared_ptr<FileBase> file_writer_ptr;
@@ -112,7 +94,7 @@ namespace log_helper {
         // Parse the lines of the configuration file and stores in the map
         if (config_file.good()) {
             for (std::string line; std::getline(config_file, line);) {
-                if (!line.empty() && line[0] != '#') {
+                if (!line.empty() && line[0] != '#' && line[0] != '[') {
                     line = ltrim(line);
                     line = rtrim(line);
                     auto split_line = split(line);
@@ -121,6 +103,7 @@ namespace log_helper {
                     auto value = ltrim(split_line[1]);
                     value = rtrim(value);
                     configuration_parameters[key] = value;
+                    DEBUG_MESSAGE("CONFIG_PARAMETER-KEY:" + key + " VALUE:" + value);
                 }
             }
         } else {
@@ -170,8 +153,8 @@ namespace log_helper {
             EXCEPTION_MESSAGE("[ERROR in gethostname(char *, int)] Could not access the host name");
         }
 
-        auto log_dir = configuration_parameters[LOG_DIR_KEY];
-        log_file_path = log_dir + "/" + ss.str() + "_" + benchmark_name + "_ECC_" + ecc + "_" + host + ".log";
+        auto log_file_path = configuration_parameters[LOG_DIR_KEY] + "/" +
+                             ss.str() + "_" + benchmark_name + "_ECC_" + ecc + "_" + host + ".log";
         DEBUG_MESSAGE("Log file path " + log_file_path);
 
         switch (logging_type) {
@@ -192,19 +175,18 @@ namespace log_helper {
             }
                 break;
             default:
-                THROW_EXCEPTION(
-                        "INVALID LOG_HELPER CONFIGURATION, ONLY LOCAL, UDP, or LOCAL_AND_UDP logging are allowed");
+                THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, ONLY LOCAL, UDP, "
+                                "or LOCAL_AND_UDP logging are allowed");
         }
 
-        bool file_creation_outcome = file_writer_ptr->write("#HEADER " + test_info);
+        bool file_creation_outcome = file_writer_ptr->write("#HEADER " + test_info + "\n");
         ss.str("");
-        ss << std::put_time(std::localtime(&in_time_t), "#BEGIN Y:%Y M:%m D:%d Time:%H:%M:%S");
+        ss << std::put_time(std::localtime(&in_time_t), "#BEGIN Y:%Y M:%m D:%d Time:%H:%M:%S")
+           << std::endl;
         file_creation_outcome &= file_writer_ptr->write(ss.str());
 
-        auto var_dir = configuration_parameters[VAR_DIR_KEY];
-        timestamp_watchdog_path = var_dir + "/" + TIMESTAMP_FILE;
 
-        return file_creation_outcome;
+        return !file_creation_outcome;
     }
 
     int32_t start_iteration() {
@@ -231,10 +213,21 @@ namespace log_helper {
                    << " KerTime:" << kernel_time
                    << " AccTime:" << kernel_time_acc
                    << std::endl;
-            file_writing_outcome &= file_writer_ptr->write(output.str());
+            file_writing_outcome = file_writer_ptr->write(output.str());
         }
         iteration_number++;
-        return file_writing_outcome;
+        return !file_writing_outcome;
+    }
+
+    int32_t end_log_file() {
+        if (!file_writer_ptr->write("#END\n")) {
+            EXCEPTION_MESSAGE("[ERROR in log_string(char *)] Unable to open file");
+            return 1;
+        }
+        kernels_total_errors = 0;
+        iteration_number = 0;
+        kernel_time_acc = 0;
+        return 0;
     }
 
     int32_t log_error_count(size_t kernel_errors) {
@@ -259,18 +252,20 @@ namespace log_helper {
                 (last_iter_with_errors + 1) == iteration_number && double_error_kill) {
                 std::string abort_error = "#ABORT amount of errors equals of the last iteration";
                 file_writer_ptr->write(abort_error + "\n");
+                end_log_file();
                 THROW_EXCEPTION(abort_error);
             } else {
                 // "#ABORT too many errors per iteration\n");
                 if (kernel_errors > max_errors_per_iter) {
                     std::string abort_error = "#ABORT too many errors per iteration";
                     file_writer_ptr->write(abort_error + "\n");
+                    end_log_file();
                     THROW_EXCEPTION(abort_error);
                 }
             }
             last_iter_errors = kernel_errors;
             last_iter_with_errors = iteration_number;
-            return file_writing_outcome;
+            return !file_writing_outcome;
         }
         return false;
     }
@@ -289,7 +284,7 @@ namespace log_helper {
                    << " KerTime:" << kernel_time
                    << " AccTime:" << kernel_time_acc
                    << " KerInf:" << info_count << std::endl;
-            return file_writer_ptr->write(output.str());
+            return !file_writer_ptr->write(output.str());
         }
         return 0;
     }
@@ -300,7 +295,7 @@ namespace log_helper {
             file_write_outcome = file_writer_ptr->write("#ERR " + error_detail + "\n");
         }
         log_error_detail_counter++;
-        return file_write_outcome;
+        return !file_write_outcome;
     }
 
     int32_t log_info_detail(std::string &info_detail) {
@@ -310,7 +305,7 @@ namespace log_helper {
             file_write_outcome = file_writer_ptr->write("#INF " + info_detail + "\n");
         }
         log_info_detail_counter++;
-        return file_write_outcome;
+        return !file_write_outcome;
     }
 
     size_t set_max_errors_iter(size_t max_errors) {
@@ -338,17 +333,6 @@ namespace log_helper {
         double_error_kill = false;
     }
 
-    int32_t end_log_file() {
-        if (!file_writer_ptr->write("#END\n")) {
-            EXCEPTION_MESSAGE("[ERROR in log_string(char *)] Unable to open file");
-            return 1;
-        }
-        kernels_total_errors = 0;
-        iteration_number = 0;
-        kernel_time_acc = 0;
-        return 0;
-    }
-
     void update_timestamp() {
         auto signal_cmd = configuration_parameters[SIGNAL_CMD_KEY];
         int sys_ret = system(signal_cmd.c_str());
@@ -356,6 +340,7 @@ namespace log_helper {
             EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
         }
 
+        auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
         std::ofstream timestamp_file(timestamp_watchdog_path);
         if (timestamp_file.good()) {
             auto now = std::chrono::system_clock::now();

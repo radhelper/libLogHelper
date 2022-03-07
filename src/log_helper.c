@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "log_helper.h"
+#include "env_vars.h"
 
 // Path and command configuration
 #define MAX_FULL_PATH_LEN 512
@@ -15,18 +16,6 @@
 //Some configs return full path, so it makes sense
 // that the MAX_VALUE_CONFIG will be at max MAX_FULL_PATH_LEN
 #define MAX_VALUE_CONFIG_LEN MAX_FULL_PATH_LEN
-
-// Config file info
-// Keys to be extracted from config file
-#define LOG_DIR_KEY "logdir"
-#define SIGNAL_CMD_KEY "signalcmd"
-#define VAR_DIR_KEY "vardir"
-// key to load ecc verification data
-#define ECC_INFO_KEY "eccinfofile"
-#define CONFIG_FILE_PATH "/etc/radiation-benchmarks.conf"
-
-// Location of timestamp file for software watchdog
-#define TIMESTAMP_FILE "timestamp.txt"
 
 char timestamp_watchdog[MAX_FULL_PATH_LEN];
 

@@ -1,4 +1,3 @@
-#include <cstring>
 #include <memory>
 
 #include "log_helper.hpp"
@@ -60,9 +59,6 @@ void update_timestamp() {
     log_helper::update_timestamp();
 }
 
-/**
- * Return the name of the log file generated
- */
 char *get_log_file_name() {
-    return const_cast<char*>(log_helper::log_file_path.c_str());
+    return const_cast<char*>(log_helper::file_writer_ptr->file_path.c_str());
 }
