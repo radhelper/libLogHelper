@@ -65,3 +65,6 @@ set_property(
         SOURCE python_wrapper/log_helper.i
         PROPERTY SWIG_FLAGS "-py3" "-builtin" "-extranative"
 )
+
+TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
+TARGET_LINK_LIBRARIES(log_helper LogHelper)
