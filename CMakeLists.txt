@@ -37,15 +37,15 @@ add_subdirectory(examples)
 # Define debug feature
 option(WITH_DEBUG "To print debug information" OFF)
 
-if(WITH_DEBUG)
+if (WITH_DEBUG)
     add_definitions(-DDEBUG=1)
-endif()
+endif ()
 
 
 # PYTHON Wrapper
-find_package (SWIG)
-include (UseSWIG)
-set (UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
+find_package(SWIG)
+include(UseSWIG)
+set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 
 swig_add_library(log_helper
         TYPE SHARED
@@ -61,7 +61,7 @@ set_property(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-#include_directories(
-#        TARGET log_helper
-#        ${CMAKE_CURRENT_SOURCE_DIR}/include
-#)
+set_property(
+        SOURCE python_wrapper/log_helper.i
+        PROPERTY SWIG_FLAGS "-py3" "-builtin" "-extranative"
+)
