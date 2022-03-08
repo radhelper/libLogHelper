@@ -12,10 +12,8 @@
 // Path and command configuration
 #define MAX_FULL_PATH_LEN 512
 #define LOG_FILE_NAME_LEN 256
-#define FULL_LOG_FILE_NAME_LEN MAX_FULL_PATH_LEN
-//Some configs return full path, so it makes sense
-// that the MAX_VALUE_CONFIG will be at max MAX_FULL_PATH_LEN
-#define MAX_VALUE_CONFIG_LEN MAX_FULL_PATH_LEN
+//Maximum config string length
+#define MAX_VALUE_CONFIG_LEN 1024
 
 char timestamp_watchdog[MAX_FULL_PATH_LEN];
 
@@ -37,7 +35,7 @@ unsigned long int log_info_detail_count = 0;
 // Absolute path for log file, if needed
 //char *absolute_path;
 char log_file_name[LOG_FILE_NAME_LEN] = "";
-char full_log_file_name[FULL_LOG_FILE_NAME_LEN] = "";
+char full_log_file_name[MAX_FULL_PATH_LEN] = "";
 
 // Signal command used to send a signal to the software watchdog
 char signal_cmd[MAX_VALUE_CONFIG_LEN] = "";
@@ -208,8 +206,8 @@ void update_timestamp() {
  * Return the name of the log file generated
  * @return
  */
-char *get_log_file_name() {
-    return full_log_file_name;
+void get_log_file_name(char *log_file_name_){
+    strcpy(log_file_name_, full_log_file_name);
 }
 
 /**

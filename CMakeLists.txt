@@ -39,7 +39,7 @@ set_target_properties(LogHelper PROPERTIES VERSION ${PROJECT_VERSION})
 
 set_target_properties(LogHelper
         PROPERTIES PUBLIC_HEADER include/log_helper.h)
-##############################################################################
+########################################################################################################################
 # CONFIGURE INSTALLATION
 # Set the pkg-config files
 configure_file(LogHelper.pc.in LogHelper.pc @ONLY)
@@ -55,22 +55,23 @@ install(FILES ${CMAKE_BINARY_DIR}/LogHelper.pc DESTINATION ${CMAKE_INSTALL_DATAR
 
 # CONFIGURE log-helper.conf file #######################################
 # Path to the radiation-benchmarks repository
-if(NOT RAD_BENCHS_INSTALL_DIR)
+if (NOT RAD_BENCHS_INSTALL_DIR)
     set(RAD_BENCHS_INSTALL_DIR /home/carol/radiation-benchmarks)
-endif()
+endif ()
 # Killall signal command to be sent to the SW watchdog
-if(NOT WATCHDOG_COMMANDS)
-    set(WATCHDOG_COMMANDS
-            "killall -q -USR1 killtestSignal-2.0.py; killall -q -USR1 test_killtest_commands_json-2.0.py; killall -q -USR1 python3")
-endif()
+if (NOT WATCHDOG_COMMANDS)
+    set(WATCHDOG_COMMANDS "killall -q -USR1 killtestSignal-2.0.py")
+    set(WATCHDOG_COMMANDS "${WATCHDOG_COMMANDS}; test_killtest_commands_json-2.0.py;")
+    set(WATCHDOG_COMMANDS "${WATCHDOG_COMMANDS}; killall -q -USR1  killall -q -USR1 python3;")
+endif ()
 # System tmp dir
-if(NOT TMP_DIR)
+if (NOT TMP_DIR)
     set(TMP_DIR /tmp)
-endif()
+endif ()
 # Path to file that will contains 1/0 that refers to ECC enabled or disabled respectively.
-if(NOT ECC_INFO_FILE_DIR)
+if (NOT ECC_INFO_FILE_DIR)
     set(ECC_INFO_FILE_DIR /tmp/ecc-info-file.txt)
-endif()
+endif ()
 # Server that will receive the messages IP
 if (NOT SERVER_IP)
     set(SERVER_IP 192.168.1.5)
@@ -87,7 +88,22 @@ install(
         FILES ${CMAKE_BINARY_DIR}/${RADIATION_CONF_FILE}
         DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}
 )
-##############################################################################
+
+install(DIRECTORY DESTINATION /${CMAKE_INSTALL_LOCALSTATEDIR}/radiation-benchmarks/log)
+
+# uninstall target
+if (NOT TARGET uninstall)
+    configure_file(
+            "${CMAKE_CURRENT_SOURCE_DIR}/Uninstall.cmake.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake"
+            IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+            COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake)
+endif ()
+
+
+########################################################################################################################
 
 # Build examples
 add_subdirectory(examples)

@@ -84,7 +84,7 @@ void update_timestamp();
 /**
  * Return the name of the log file generated
  */
-char *get_log_file_name();
+void get_log_file_name(char *log_file_name);
 
 //end C++ macro section
 #ifdef __cplusplus

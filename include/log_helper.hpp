@@ -58,7 +58,8 @@ namespace log_helper {
      * Read a configuration file from the default path
      */
     void read_configuration_file() {
-        std::ifstream config_file(CONFIG_FILE_PATH);
+        std::string config_file_path = CONFIG_FILE_PATH;
+        std::ifstream config_file(config_file_path);
         // split string
         auto split = [](std::string &string_to_split) {
             std::vector<std::string> tokens;

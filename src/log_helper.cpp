@@ -45,20 +45,22 @@ int log_info_count(unsigned long int info_count) {
     return log_helper::log_info_count(info_count);
 }
 
-int log_error_detail(const char *string) {
-    std::string error_detail = string;
-    return log_helper::log_error_detail(error_detail);
+int log_error_detail(const char *error_detail) {
+    std::string error_detail_str = error_detail;
+    return log_helper::log_error_detail(error_detail_str);
 }
 
-int log_info_detail(const char *string) {
-    std::string info_detail = string;
-    return log_helper::log_info_detail(info_detail);
+int log_info_detail(const char *info_detail) {
+    std::string info_detail_str = info_detail;
+    return log_helper::log_info_detail(info_detail_str);
 }
 
 void update_timestamp() {
     log_helper::update_timestamp();
 }
 
-char *get_log_file_name() {
-    return const_cast<char*>(log_helper::file_writer_ptr->file_path.c_str());
+void get_log_file_name(char *log_file_name) {
+    std::copy(log_helper::file_writer_ptr->get_file_path().begin(),
+              log_helper::file_writer_ptr->get_file_path().end(),
+              log_file_name);
 }

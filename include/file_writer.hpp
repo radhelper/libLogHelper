@@ -17,16 +17,20 @@
 #include "common.hpp"
 
 namespace log_helper {
-    struct FileBase {
-        std::string file_path;
-
+    class FileBase {
+    public:
         virtual bool write(const std::string &buffer) = 0;
+
+        virtual std::string get_file_path() = 0;
     };
 
     /**
      * Only local file writing
      */
-    struct LocalFile : virtual public FileBase {
+    class LocalFile : virtual public FileBase {
+    protected:
+        std::string file_path;
+    public:
         explicit LocalFile(std::string file_path) {
             this->file_path = std::move(file_path);
             std::ofstream output(this->file_path, std::ios::app);
@@ -46,20 +50,21 @@ namespace log_helper {
             return false;
         }
 
+        std::string get_file_path() override { return this->file_path; }
     };
 
     /**
      * Networking file writing
      */
-    struct UDPFile : virtual public FileBase {
+    class UDPFile : virtual public FileBase {
+    protected:
         std::string server_ip;
         int32_t port;
         int32_t client_socket;
         struct sockaddr_in server_address;
-
+    public:
         UDPFile(std::string server_ip, const int32_t port)
                 : server_ip(std::move(server_ip)), port(port), server_address({}) {
-            this->file_path = this->server_ip;
             //  Prepare our context and socket
             // Filling server information
             this->client_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -82,20 +87,26 @@ namespace log_helper {
             }
             return true;
         }
+
+        std::string get_file_path() override { return this->server_ip; }
+
     };
 
     /**
      * To use both methods TODO: NOT TESTED
      */
-    struct LocalAndUDPFile : public LocalFile, public UDPFile {
+    class LocalAndUDPFile : public LocalFile, public UDPFile {
+    public:
+
         LocalAndUDPFile(const std::string &file_path, const std::string &server_ip, const int32_t port)
-                : LocalFile(file_path), UDPFile(server_ip, port) {
-            this->file_path = "LOCAL:" + file_path + " IP:" + server_ip;
-        }
+                : LocalFile(file_path), UDPFile(server_ip, port) {}
 
         bool write(const std::string &buffer) final {
             return LocalFile::write(buffer) && UDPFile::write(buffer);
         }
+
+        std::string get_file_path() override { return "LOCAL:" + this->file_path + " IP:" + this->server_ip; }
+
     };
 
 } /*END NAMESPACE LOG_HELPER*/

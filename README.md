@@ -1,6 +1,5 @@
 # libLogHelper
-Library necessary to radiation experiments
-Library in charge to log benchmark data. This library will be used together the benchmark in execution, inside the benchmark source code.
+This lib is necessary for radiation experiments to log benchmark data. This library is meant to be used within the benchmark source code.
 
 # Dependencies
 - CMake >=3.16
@@ -9,14 +8,22 @@ Library in charge to log benchmark data. This library will be used together the 
 
 # Getting started
 
-To use with C or C++ you have to build the library and then
+To use with C or C++, you have to build the library and then
 link with your code.
 
 ## Building libLogHelper
 
-You can set to disable some of the library functionalities:
+You can set to disable some library functionalities:
 - -DWITH_PYTHON_SUPPORT=OFF to disable Python 3.8 wrapper building
 - -DWITH_DEBUG=OFF to disable debug printing information
+- -DRAD_BENCHS_INSTALL_DIR=<path to rad benchmarks> (default /home/carol/radiation-benchmarks)
+- -DWATCHDOG_COMMANDS=<signal command to be sent to the SW watchdog>
+  (default killall -q -USR1 killtestSignal-2.0.py; test_killtest_commands_json-2.0.py;; killall -q -USR1  killall -q -USR1 python3;)
+- -DTMP_DIR=<System tmp dir> (default /tmp)
+- -DECC_INFO_FILE_DIR=<Path to file that will contains 1/0 that refers to ECC enabled or disabled respectively.
+- default (/tmp/ecc-info-file.txt)>
+- -DSERVER_IP=<Server that will receive the messages IP (default 192.168.1.5)>
+- -DSERVER_PORT=<server port that will receive the messages (default 1024)
 
 ```shell
 cd libLogHelper
@@ -29,90 +36,27 @@ If you wish to install in the whole system
 ```shell
 sudo make install
 ```
-Then to use you just have to build the benchmark with this library use -lLogHelper
-with -I<path_to_this_repo>/include/ -L<path_to_this_repo>/
-(if not installed in the system)
-
-
-The library contains the following functions to be included in your app.
-```C
-/**
-* Set the max errors that can be found for a single iteration
-* If more than max errors is found, exit the program
- */
-unsigned long int set_max_errors_iter(unsigned long int max_errors);
-
-/**
- * Set the max number of infos logged in a single iteration
- */
-unsigned long int set_max_infos_iter(unsigned long int max_infos);
-
-/**
- *  Set the interval the program must print log details,
- *  default is 1 (each iteration)
- */
-int set_iter_interval_print(int interval);
-
-/**
- * Disable double error kill
- * this will disable double error kill if
- * two errors happened sequentially
- */
-void disable_double_error_kill();
-
-/**
- * Generate the log file name, log info from user about the test
- * to be executed and reset log variables
- */
-int start_log_file(const char *benchmark_name, const char *test_info);
-
-/**
- * Log the string "#END" and reset global variables
- */
-int end_log_file();
-
-/**
- *  Start time to measure kernel time, also update
- *  iteration number and log to file
- */
-int start_iteration();
-
-/**
- * Finish the measured kernel time log both
- * time (total time and kernel time)
- */
-int end_iteration();
-
-/**
- * Update total errors variable and log both
- * errors(total errors and kernel errors)
- */
-int log_error_count(unsigned long int kernel_errors);
-
-/**
- * Update total infos variable and log both infos(total infos and iteration infos)
- */
-int log_info_count(unsigned long int info_count);
-
-/**
- * Print some string with the detail of an error to log file
- */
-int log_error_detail(char *string);
-
-/**
- * Print some string with the detail of an error/information to log file
- */
-int log_info_detail(char *string);
-
-/**
- * Update with current timestamp the file where the software watchdog watches
- */
-void update_timestamp();
-
-/**
- * Return the name of the log file generated
- */
-char *get_log_file_name();
+To uninstall the library (/var/radiation-benchmarks/ path is not deleted)
+```shell
+sudo make uninstall
 ```
 
-To use Python 3.8 lib just call the same name as 
+Then to use you just have to build the benchmark with this library use -lLogHelper
+with -I<install_path>/include -L<install_path>/lib
+(if not installed in the system)
+
+```C
+// include the header in your C/C++ code
+#include "log_helper.h"
+...
+```
+
+### Python Wrapper
+It is possible to use the Python 3.8 wrapper to use the library on Python apps.
+You have to set the path to the build folder, then just call the same name as:
+
+```python
+import log_helper as lh
+lh.start_log_file("MyBenchmark", "Myheader")
+...
+```
