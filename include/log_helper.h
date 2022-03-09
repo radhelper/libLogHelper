@@ -67,14 +67,14 @@ int log_error_count(unsigned long int kernel_errors);
 int log_info_count(unsigned long int info_count);
 
 /**
- * Print some string with the detail of an error to log file
+ * Print some error_detail with the detail of an error to log file
  */
-int log_error_detail(const char *string);
+int log_error_detail(const char *error_detail);
 
 /**
- * Print some string with the detail of an error/information to log file
+ * Print some info_detail with the detail of an error/information to log file
  */
-int log_info_detail(const char *string);
+int log_info_detail(const char *info_detail);
 
 /**
  * Update with current timestamp the file where the software watchdog watches

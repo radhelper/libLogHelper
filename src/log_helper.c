@@ -5,7 +5,7 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include "limits.h"
 #include "log_helper.h"
 #include "env_vars.h"
 
@@ -189,7 +189,7 @@ int check_ecc_status() {
  */
 void update_timestamp() {
     int sys_ret = system(signal_cmd);
-    if (sys_ret == -1) {
+    if (sys_ret != 0) {
 #ifdef DEBUG
         fprintf(stderr, "ERROR ON SYSTEM CMD %s at %s:%d\n", signal_cmd, __FILE__, __LINE__);
 #endif
@@ -253,7 +253,7 @@ int start_log_file(const char *benchmark_name, const char *test_info) {
     snprintf(second, sizeof(second), "%02d", ptm->tm_sec);
 
     // ~ Get the host name to add inside the log name.
-    char host[35] = "Host";
+    char host[HOST_NAME_MAX] = "Host";
     int host_error = gethostname(host, 35);
 
     if (host_error != 0) {

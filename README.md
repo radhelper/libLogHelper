@@ -20,7 +20,7 @@ You can set to disable some library functionalities:
 - -DWATCHDOG_COMMANDS=<signal command to be sent to the SW watchdog>
   (default killall -q -USR1 killtestSignal-2.0.py; test_killtest_commands_json-2.0.py;; killall -q -USR1  killall -q -USR1 python3;)
 - -DTMP_DIR=<System tmp dir> (default /tmp)
-- -DECC_INFO_FILE_DIR=<Path to file that will contains 1/0 that refers to ECC enabled or disabled respectively.
+- -DECC_INFO_FILE_DIR=<Path to file that will contain 1/0 that refers to ECC enabled or disabled respectively.
 - default (/tmp/ecc-info-file.txt)>
 - -DSERVER_IP=<Server that will receive the messages IP (default 192.168.1.5)>
 - -DSERVER_PORT=<server port that will receive the messages (default 1024)

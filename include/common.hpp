@@ -4,6 +4,7 @@
 
 #ifndef LIB_LOGHELPER_COMMON_HPP
 #define LIB_LOGHELPER_COMMON_HPP
+
 #include <string>
 
 namespace log_helper {

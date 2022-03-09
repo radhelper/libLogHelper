@@ -1,8 +1,30 @@
-# example https://stackoverflow.com/questions/17511496/how-to-create-a-shared-library-with-cmake
 cmake_minimum_required(VERSION 3.16)
 
 # Common CMake settings
 project(LogHelper LANGUAGES C CXX VERSION 1.0.0 DESCRIPTION "Log Helper for radiation experiments")
+
+########################################################################################################################
+#In many cases you will want to make sure that the required libraries are always found independent
+#from LD_LIBRARY_PATH and the install location. use, i.e. don't skip the full RPATH for the build tree
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# the RPATH to be used when installing, but only if it's not a system directory
+list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+if ("${isSystemDir}" STREQUAL "-1")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif ("${isSystemDir}" STREQUAL "-1")
+########################################################################################################################
+
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 14)
@@ -22,7 +44,7 @@ if (WITH_CXX_BACKEND)
             LogHelper
             SHARED
             src/log_helper.cpp
-    )
+            src/log_helper_c_wrapper.cpp src/file_writer.cpp)
 else ()
     add_library(
             LogHelper
@@ -39,6 +61,8 @@ set_target_properties(LogHelper PROPERTIES VERSION ${PROJECT_VERSION})
 
 set_target_properties(LogHelper
         PROPERTIES PUBLIC_HEADER include/log_helper.h)
+set_target_properties(LogHelper
+        PROPERTIES PUBLIC_HEADER include/log_helper.hpp)
 ########################################################################################################################
 # CONFIGURE INSTALLATION
 # Set the pkg-config files
@@ -61,8 +85,8 @@ endif ()
 # Killall signal command to be sent to the SW watchdog
 if (NOT WATCHDOG_COMMANDS)
     set(WATCHDOG_COMMANDS "killall -q -USR1 killtestSignal-2.0.py")
-    set(WATCHDOG_COMMANDS "${WATCHDOG_COMMANDS}; test_killtest_commands_json-2.0.py;")
-    set(WATCHDOG_COMMANDS "${WATCHDOG_COMMANDS}; killall -q -USR1  killall -q -USR1 python3;")
+    set(WATCHDOG_COMMANDS "${WATCHDOG_COMMANDS}; killall -q -USR1 test_killtest_commands_json-2.0.py")
+    set(WATCHDOG_COMMANDS "${WATCHDOG_COMMANDS};")
 endif ()
 # System tmp dir
 if (NOT TMP_DIR)
@@ -105,9 +129,6 @@ endif ()
 
 ########################################################################################################################
 
-# Build examples
-add_subdirectory(examples)
-
 # Debug feature
 if (WITH_DEBUG)
     add_definitions(-DDEBUG=1)
@@ -141,3 +162,7 @@ if (WITH_PYTHON_SUPPORT)
     TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
     TARGET_LINK_LIBRARIES(log_helper LogHelper)
 endif ()
+
+########################################################################################################################
+# Build examples
+add_subdirectory(examples)
