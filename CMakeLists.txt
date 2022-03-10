@@ -25,7 +25,6 @@ if ("${isSystemDir}" STREQUAL "-1")
 endif ("${isSystemDir}" STREQUAL "-1")
 ########################################################################################################################
 
-
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 14)
 
@@ -44,7 +43,9 @@ if (WITH_CXX_BACKEND)
             LogHelper
             SHARED
             src/log_helper.cpp
-            src/log_helper_c_wrapper.cpp src/file_writer.cpp)
+            src/log_helper_c_wrapper.cpp
+            src/file_writer.cpp
+    )
 else ()
     add_library(
             LogHelper
@@ -53,19 +54,17 @@ else ()
     )
 endif ()
 
-include(GNUInstallDirs)
-set(CMAKE_BUILD_TYPE Release)
-
-
-set_target_properties(LogHelper PROPERTIES VERSION ${PROJECT_VERSION})
-
-set_target_properties(LogHelper
-        PROPERTIES PUBLIC_HEADER include/log_helper.h)
-set_target_properties(LogHelper
-        PROPERTIES PUBLIC_HEADER include/log_helper.hpp)
 ########################################################################################################################
 # CONFIGURE INSTALLATION
 # Set the pkg-config files
+
+include(GNUInstallDirs)
+set(CMAKE_BUILD_TYPE Release)
+
+set_target_properties(LogHelper PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(LogHelper PROPERTIES PUBLIC_HEADER include/log_helper.h)
+set_target_properties(LogHelper PROPERTIES PUBLIC_HEADER include/log_helper.hpp)
+
 configure_file(LogHelper.pc.in LogHelper.pc @ONLY)
 target_include_directories(LogHelper PRIVATE include)
 
@@ -125,7 +124,6 @@ if (NOT TARGET uninstall)
     add_custom_target(uninstall
             COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake)
 endif ()
-
 
 ########################################################################################################################
 
