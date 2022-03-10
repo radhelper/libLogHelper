@@ -14,6 +14,7 @@ int main() {
     // header inside log file will print the detail "size:x repetition:y"
     char header[50] = "";
     char test_name[] = "SampleQuicksortC";
+    // This variable is generally set to infinity iterations, for debug we set to 100 iterations
     int iterations = 100;
     sprintf(header, "size:%d repetition:%d", size, iterations);
     start_log_file(test_name, header);
@@ -22,8 +23,9 @@ int main() {
     set_max_errors_iter(800);
 
     // set the interval of iteration to print details of current test,
-    // default is 1
-    set_iter_interval_print(1);
+    // default is 1.
+    // CAUTION: Avoid writing too much on disc/ethernet, this can break your test
+    set_iter_interval_print(5);
     char log_file_name[1024];
     get_log_file_name(log_file_name);
     printf("Starting sample benchmark in C, the log file is at %s\n", log_file_name);
@@ -36,11 +38,13 @@ int main() {
         exit(-1);
     }
 
+    // This is just an example of input. In a real scenario, we should load the data from a  file,
+    // then we calculate nothing on the Device Under Test but the evaluation kernel
     for (int i = 0; i < size; i++) {
         vector[i] = rand() % size;
     }
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < iterations; i++) {
         //copy to the tmp vector
         memcpy(tmp_vector, vector, size * sizeof(int));
         start_iteration();
@@ -72,15 +76,17 @@ int main() {
         }
 
         if (i == 85) {
+            // only the value passed to set_max_infos_iter() will be logged (default is 500)
             log_info_detail("Iteration 1326");
             info_count = 520;
         }
 
         // log how many errors the iteration had
-        // if error_count is greater than 500, or the
+        // if error_count is greater than 800, or the
         // max_errors_iter set with set_max_errors_iter()
-        // it will terminate the execution
+        // it will terminate the execution of the program
         log_error_count(error_count);
+        // the logging info function does not terminate the program
         log_info_count(info_count);
     }
 
