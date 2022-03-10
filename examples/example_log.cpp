@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include <chrono>
+
 #include "log_helper.hpp"
 
 int main() {
@@ -24,11 +24,11 @@ int main() {
     // CAUTION: Avoid writing too much on disc/ethernet, this can break your test
     log_helper::set_iter_interval_print(5);
 
-    std::cout << "Starting sample benchmark in C, log file is " << log_helper::get_log_file_name() << "\n";
+    std::cout << "Starting sample benchmark in C++, log file is " << log_helper::get_log_file_name() << "\n";
     std::random_device random_device;
     std::mt19937 random_engine(random_device());
     std::uniform_real_distribution<double> di(-1, 1);
-    std::vector<double> gold_array(size);
+    std::vector<double> gold_array(size), input_array(size);
 
     // This is just an example of input. In a real scenario, we should load the data from a  file,
     // then we calculate nothing on the Device Under Test but the evaluation kernel
@@ -37,10 +37,6 @@ int main() {
                   [&di, &random_engine] {
                       return di(random_engine);
                   });
-
-    auto input_array = gold_array;
-
-    std::cout << std::endl;
 
     for (auto i = 0; i < iterations; i++) {
         //copy to the tmp vector
