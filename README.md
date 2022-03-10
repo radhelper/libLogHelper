@@ -9,7 +9,7 @@ This lib is necessary for radiation experiments to log benchmark data. This libr
 # Getting started
 
 To use with C or C++, you have to build the library and then
-link with your code.
+link with your code. **The library functions are not thread safe**.
 
 ## Building libLogHelper
 
