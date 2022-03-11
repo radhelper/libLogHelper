@@ -6,11 +6,9 @@
 #define LOG_HELPER_BASE_HPP
 
 #include <string>
-#include "common.hpp"
 
 namespace log_helper {
-    int32_t start_log_file(const std::string &benchmark_name, const std::string &test_info,
-                           LoggingType logging_type = LoggingType::LOCAL_ONLY);
+    int32_t start_log_file(const std::string &benchmark_name, const std::string &test_info);
 
     int32_t start_iteration();
 

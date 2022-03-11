@@ -140,13 +140,33 @@ namespace log_helper {
         }
     }
 
-    /**
-     * Constructor for log_helper
-     * @param benchmark_name
-     * @param test_info
-     */
-    int32_t start_log_file(const std::string &benchmark_name, const std::string &test_info,
-                           LoggingType logging_type = LoggingType::LOCAL_ONLY) {
+    template<LoggingType logging_t>
+    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_name) {
+        THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, USE: ONLY_LOCAL=0, UDP_ONLY=1, or LOCAL_AND_UDP=2");
+    }
+
+    template<>
+    std::shared_ptr<FileBase> make_file_writer<LoggingType::LOCAL_ONLY>(std::string &log_file_path) {
+        return std::make_shared<LocalFile>(log_file_path);
+    }
+
+    template<>
+    std::shared_ptr<FileBase> make_file_writer<LoggingType::UDP_ONLY>(std::string &log_file_path) {
+        // Load server ip and port
+        auto server_ip = configuration_parameters[SERVER_IP_KEY];
+        auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
+        return std::make_shared<UDPFile>(server_ip, server_port);
+    }
+
+    template<>
+    std::shared_ptr<FileBase> make_file_writer<LoggingType::LOCAL_AND_UDP>(std::string &log_file_path) {
+        // Load server ip and port
+        auto server_ip = configuration_parameters[SERVER_IP_KEY];
+        auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
+        return std::make_shared<LocalAndUDPFile>(log_file_path, server_ip, server_port);
+    }
+
+    int32_t start_log_file(const std::string &benchmark_name, const std::string &test_info) {
         // Necessary for all configurations (network or local)
         read_configuration_file();
 
@@ -170,24 +190,7 @@ namespace log_helper {
         auto log_file_path = configuration_parameters[LOG_DIR_KEY] + "/" +
                              ss.str() + "_" + benchmark_name + "_ECC_" + ecc + "_" + host + ".log";
         DEBUG_MESSAGE("Log file path " + log_file_path);
-
-        // Load server ip and port
-        auto server_ip = configuration_parameters[SERVER_IP_KEY];
-        auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
-        switch (logging_type) {
-            case LoggingType::LOCAL_ONLY:
-                file_writer_ptr = std::make_shared<LocalFile>(log_file_path);
-                break;
-            case LoggingType::UDP_ONLY:
-                file_writer_ptr = std::make_shared<UDPFile>(server_ip, server_port);
-                break;
-            case LoggingType::LOCAL_AND_UDP:
-                file_writer_ptr = std::make_shared<LocalAndUDPFile>(log_file_path, server_ip, server_port);
-                break;
-            default:
-                THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, ONLY LOCAL, UDP, "
-                                "or LOCAL_AND_UDP logging are allowed");
-        }
+        file_writer_ptr = make_file_writer<LOGGING_TYPE_CLASS>(log_file_path);
 
         bool file_creation_outcome = file_writer_ptr->write("#HEADER " + test_info + "\n");
         ss.str("");

@@ -41,20 +41,24 @@ namespace log_helper {
         //  Prepare our context and socket
         // Filling server information
         this->client_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        if (this->client_socket == -1) {
+            EXCEPTION_MESSAGE("[ERROR Unable to create a socket]");
+        }
         this->server_address.sin_family = AF_INET;
         this->server_address.sin_port = htons(this->port);
-        inet_pton(AF_INET, this->server_ip.c_str(), &(this->server_address.sin_addr.s_addr));
-        if (this->client_socket < -1) {
-            EXCEPTION_MESSAGE("[ERROR Unable to create a socket]");
+        if (inet_pton(AF_INET, this->server_ip.c_str(), &(this->server_address.sin_addr.s_addr)) == -1) {
+            EXCEPTION_MESSAGE("[ERROR Unable to  convert IPv4/IPv6 addresses from text to binary form]");
         }
     }
 
     bool UDPFile::write(const std::string &buffer) {
-        auto error = sendto(this->client_socket, buffer.data(), buffer.size(),
-                            MSG_CONFIRM, (const struct sockaddr *) &this->server_address,
-                            sizeof(this->server_address));
-
-        if (error < 0) {
+        if (sendto(
+                this->client_socket,
+                buffer.data(),
+                buffer.size(),
+                MSG_CONFIRM,
+                (const struct sockaddr *) &this->server_address,
+                sizeof(this->server_address)) == -1) {
             EXCEPTION_MESSAGE("[ERROR Unable to send the message " + buffer + "]");
             return false;
         }

@@ -26,5 +26,13 @@ namespace log_helper {
         LOCAL_AND_UDP
     };
 
+#if LOGGING_TYPE == 0
+#define LOGGING_TYPE_CLASS LoggingType::LOCAL_ONLY
+#elif  LOGGING_TYPE == 1
+#define LOGGING_TYPE_CLASS LoggingType::UDP_ONLY
+#elif  LOGGING_TYPE == 2
+#define LOGGING_TYPE_CLASS LoggingType::LOCAL_AND_UDP
+#endif
+
 }
 #endif //LIB_LOGHELPER_COMMON_HPP

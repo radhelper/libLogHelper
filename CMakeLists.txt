@@ -53,6 +53,27 @@ else ()
             src/log_helper.c
     )
 endif ()
+########################################################################################################################
+# Set the logging approach
+# UPDATE IF THERE IS CHANGES on common.hpp
+#    enum class LoggingType{
+#        LOCAL_ONLY = 0,
+#        UDP_ONLY,
+#        LOCAL_AND_UDP
+#    } ;
+if (NOT LOGGING_TYPE OR LOGGING_TYPE STREQUAL "LOCAL")
+    message("-- Selecting LOCAL logging approach")
+    add_definitions(-DLOGGING_TYPE=0)
+elseif (LOGGING_TYPE STREQUAL "UDP")
+    message("-- Selecting UDP logging approach")
+    add_definitions(-DLOGGING_TYPE=1)
+elseif (LOGGING_TYPE STREQUAL "LOCAL_AND_UDP")
+    message("-- Selecting LOCAL_AND_UPD logging approach")
+    add_definitions(-DLOGGING_TYPE=2)
+else ()
+    message(FATAL_ERROR "INVALID LOGGING_TYPE CONFIGURATION, USE: LOCAL, UPD, LOCAL_AND_UDP")
+endif ()
+
 
 ########################################################################################################################
 # CONFIGURE INSTALLATION
