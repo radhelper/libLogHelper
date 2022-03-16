@@ -124,10 +124,10 @@ namespace log_helper {
 
     void update_timestamp() {
         auto signal_cmd = configuration_parameters[SIGNAL_CMD_KEY];
-        int sys_ret = system(signal_cmd.c_str());
-        if (sys_ret != 0) {
-            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
-        }
+        system(signal_cmd.c_str());
+//        if (sys_ret != 0) {
+//            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
+//        }
 
         auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
         std::ofstream timestamp_file(timestamp_watchdog_path);
