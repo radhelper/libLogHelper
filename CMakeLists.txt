@@ -100,7 +100,7 @@ install(FILES ${CMAKE_BINARY_DIR}/LogHelper.pc DESTINATION ${CMAKE_INSTALL_DATAR
 # CONFIGURE log-helper.conf file #######################################
 # Path to the radiation-benchmarks repository
 if (NOT RAD_BENCHS_INSTALL_DIR)
-    set(RAD_BENCHS_INSTALL_DIR /home/carol/radiation-benchmarks)
+    set(RAD_BENCHS_INSTALL_DIR $ENV{HOME}/radiation-benchmarks)
 endif ()
 # Killall signal command to be sent to the SW watchdog
 if (NOT WATCHDOG_COMMANDS)
@@ -133,8 +133,7 @@ install(
         DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}
 )
 
-install(DIRECTORY DESTINATION /${CMAKE_INSTALL_LOCALSTATEDIR}/radiation-benchmarks/log)
-
+install(CODE "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createvarlogdir.sh ${CMAKE_INSTALL_LOCALSTATEDIR})")
 # uninstall target
 if (NOT TARGET uninstall)
     configure_file(
