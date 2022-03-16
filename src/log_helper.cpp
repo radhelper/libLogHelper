@@ -124,7 +124,7 @@ namespace log_helper {
 
     void update_timestamp() {
         auto signal_cmd = configuration_parameters[SIGNAL_CMD_KEY];
-        system(signal_cmd.c_str());
+        auto sys_ret = system(signal_cmd.c_str());
 //        if (sys_ret != 0) {
 //            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
 //        }
