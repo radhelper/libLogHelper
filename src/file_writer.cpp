@@ -5,6 +5,10 @@
 #include "file_writer.hpp"
 
 namespace log_helper {
+
+    void FileBase::set_ecc_status(const char ecc) {
+        this->ecc_status = ecc;
+    }
     /**
      * Only local file writing
      */
@@ -52,10 +56,14 @@ namespace log_helper {
     }
 
     bool UDPFile::write(const std::string &buffer) {
+        char msg_header[3] = {this->ecc_status, 0, 0};
+        uint16_t short_size = buffer.size();
+        std::copy(&short_size, &short_size + sizeof (short_size), msg_header + 1);
+        auto new_buffer = std::string(msg_header) + buffer;
         if (sendto(
                 this->client_socket,
-                buffer.data(),
-                buffer.size(),
+                new_buffer.data(),
+                new_buffer.size(),
                 MSG_CONFIRM,
                 (const struct sockaddr *) &this->server_address,
                 sizeof(this->server_address)) == -1) {

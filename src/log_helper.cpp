@@ -179,8 +179,10 @@ namespace log_helper {
         auto date_fmt = "%Y_%m_%d_%H_%M_%S";
         ss << std::put_time(std::localtime(&in_time_t), date_fmt);
         auto ecc = "OFF";
+        char ecc_status = 0;
         if (check_ecc_status()) {
             ecc = "ON";
+            ecc_status = 1;
         }
         char host[HOST_NAME_MAX] = "hostnameunknown";
         if (gethostname(host, HOST_NAME_MAX) != 0) {
@@ -191,6 +193,8 @@ namespace log_helper {
                              ss.str() + "_" + benchmark_name + "_ECC_" + ecc + "_" + host + ".log";
         DEBUG_MESSAGE("Log file path " + log_file_path);
         file_writer_ptr = make_file_writer<LOGGING_TYPE_CLASS>(log_file_path);
+
+        file_writer_ptr->set_ecc_status(ecc_status);
 
         bool file_creation_outcome = file_writer_ptr->write("#HEADER " + test_info + "\n");
         ss.str("");
