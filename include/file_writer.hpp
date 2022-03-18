@@ -18,13 +18,13 @@
 namespace log_helper {
     class FileBase {
     protected:
-        char ecc_status;
+        std::uint8_t ecc_status;
     public:
         virtual bool write(const std::string &buffer) = 0;
 
         virtual std::string get_file_path() = 0;
 
-        void set_ecc_status(char ecc);
+        void set_ecc_status(std::uint8_t ecc);
     };
 
     /**

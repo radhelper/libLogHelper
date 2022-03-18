@@ -33,6 +33,9 @@ namespace log_helper {
 #elif  LOGGING_TYPE == 2
 #define LOGGING_TYPE_CLASS LoggingType::LOCAL_AND_UDP
 #endif
-
+//    Define the size of networking message
+#ifndef UDP_MESSAGE_LENGTH
+#define UDP_MESSAGE_LENGTH 256lu
+#endif
 }
 #endif //LIB_LOGHELPER_COMMON_HPP

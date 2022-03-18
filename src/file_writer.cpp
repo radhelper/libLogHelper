@@ -1,14 +1,14 @@
 //
 // Created by fernando on 09/03/2022.
 //
-
+#include <vector>
 #include "file_writer.hpp"
 
 namespace log_helper {
-
-    void FileBase::set_ecc_status(const char ecc) {
+    void FileBase::set_ecc_status(const std::uint8_t ecc) {
         this->ecc_status = ecc;
     }
+
     /**
      * Only local file writing
      */
@@ -56,10 +56,14 @@ namespace log_helper {
     }
 
     bool UDPFile::write(const std::string &buffer) {
-        char msg_header[3] = {this->ecc_status, 0, 0};
-        uint16_t short_size = buffer.size();
-        std::copy(&short_size, &short_size + sizeof (short_size), msg_header + 1);
-        auto new_buffer = std::string(msg_header) + buffer;
+        if (buffer.size() > UDP_MESSAGE_LENGTH - 1) {
+            THROW_EXCEPTION("[Size of the message extrapolates the maximum size of UDP message length (" +
+                            std::to_string(UDP_MESSAGE_LENGTH) +
+                            "), if you want you can set a larger size on Cmake configs.]");
+        }
+        std::vector<std::uint8_t> new_buffer(UDP_MESSAGE_LENGTH, 0);
+        new_buffer[0] = this->ecc_status;
+        std::copy(buffer.begin(), buffer.end(), new_buffer.begin() + 1);
         if (sendto(
                 this->client_socket,
                 new_buffer.data(),

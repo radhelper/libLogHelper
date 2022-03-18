@@ -179,7 +179,7 @@ namespace log_helper {
         auto date_fmt = "%Y_%m_%d_%H_%M_%S";
         ss << std::put_time(std::localtime(&in_time_t), date_fmt);
         auto ecc = "OFF";
-        char ecc_status = 0;
+        std::uint8_t ecc_status = 0;
         if (check_ecc_status()) {
             ecc = "ON";
             ecc_status = 1;
