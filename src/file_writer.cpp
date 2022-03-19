@@ -86,7 +86,10 @@ namespace log_helper {
      * To use both methods TODO: NOT TESTED
      */
     LocalAndUDPFile::LocalAndUDPFile(const std::string &file_path, const std::string &server_ip, const int32_t port)
-            : LocalFile(file_path), UDPFile(server_ip, port) {}
+            : LocalFile(file_path), UDPFile(server_ip, port) {
+        // Send the file path to have a reference on the server
+        UDPFile::write("#LOGFILE " + this->file_path);
+    }
 
     bool LocalAndUDPFile::write(const std::string &buffer) {
         return LocalFile::write(buffer) && UDPFile::write(buffer);

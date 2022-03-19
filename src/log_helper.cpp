@@ -123,11 +123,13 @@ namespace log_helper {
 
 
     void update_timestamp() {
+        // We only update the timestamp if we are using the local
+#if LOGGING_TYPE == LOCAL_ONLY
         auto signal_cmd = configuration_parameters[SIGNAL_CMD_KEY];
         auto sys_ret = system(signal_cmd.c_str());
-//        if (sys_ret != 0) {
-//            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
-//        }
+        if (sys_ret != 0) {
+            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
+        }
 
         auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
         std::ofstream timestamp_file(timestamp_watchdog_path);
@@ -138,20 +140,21 @@ namespace log_helper {
             timestamp_file << value.count();
             timestamp_file.close();
         }
+#endif
     }
 
-    template<LoggingType logging_t>
-    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_name) {
+    template<int logging_t>
+    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_path) {
         THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, USE: ONLY_LOCAL=0, UDP_ONLY=1, or LOCAL_AND_UDP=2");
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LoggingType::LOCAL_ONLY>(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path) {
         return std::make_shared<LocalFile>(log_file_path);
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LoggingType::UDP_ONLY>(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
@@ -159,7 +162,7 @@ namespace log_helper {
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LoggingType::LOCAL_AND_UDP>(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
@@ -192,14 +195,13 @@ namespace log_helper {
         auto log_file_path = configuration_parameters[LOG_DIR_KEY] + "/" +
                              ss.str() + "_" + benchmark_name + "_ECC_" + ecc + "_" + host + ".log";
         DEBUG_MESSAGE("Log file path " + log_file_path);
-        file_writer_ptr = make_file_writer<LOGGING_TYPE_CLASS>(log_file_path);
+        file_writer_ptr = make_file_writer<LOGGING_TYPE>(log_file_path);
 
         file_writer_ptr->set_ecc_status(ecc_status);
 
         bool file_creation_outcome = file_writer_ptr->write("#HEADER " + test_info + "\n");
         ss.str("");
-        ss << std::put_time(std::localtime(&in_time_t), "#BEGIN Y:%Y M:%m D:%d Time:%H:%M:%S")
-           << std::endl;
+        ss << std::put_time(std::localtime(&in_time_t), "#BEGIN Y:%Y M:%m D:%d Time:%H:%M:%S") << std::endl;
         file_creation_outcome &= file_writer_ptr->write(ss.str());
 
         update_timestamp();

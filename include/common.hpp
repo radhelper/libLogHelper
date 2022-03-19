@@ -20,19 +20,16 @@ namespace log_helper {
 #define DEBUG_MESSAGE(message) std::cout << _exception_info(message, __FILE__, __LINE__)
 #define THROW_EXCEPTION(message) std::throw_with_nested(std::runtime_error(_exception_info(message, __FILE__, __LINE__)))
 
-    enum class LoggingType {
+    typedef enum {
         LOCAL_ONLY = 0,
-        UDP_ONLY,
-        LOCAL_AND_UDP
-    };
+        UDP_ONLY = 1,
+        LOCAL_AND_UDP = 2
+    } LoggingType;
 
-#if LOGGING_TYPE == 0
-#define LOGGING_TYPE_CLASS LoggingType::LOCAL_ONLY
-#elif  LOGGING_TYPE == 1
-#define LOGGING_TYPE_CLASS LoggingType::UDP_ONLY
-#elif  LOGGING_TYPE == 2
-#define LOGGING_TYPE_CLASS LoggingType::LOCAL_AND_UDP
+#ifndef LOGGING_TYPE
+#define LOGGING_TYPE LOCAL_ONLY
 #endif
+
 //    Define the size of networking message
 #ifndef UDP_MESSAGE_LENGTH
 #define UDP_MESSAGE_LENGTH 256lu
