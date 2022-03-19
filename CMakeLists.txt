@@ -86,7 +86,7 @@ set_target_properties(LogHelper PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(LogHelper PROPERTIES PUBLIC_HEADER include/log_helper.h)
 set_target_properties(LogHelper PROPERTIES PUBLIC_HEADER include/log_helper.hpp)
 
-configure_file(LogHelper.pc.in LogHelper.pc @ONLY)
+configure_file(cmake_install_scripts/LogHelper.pc.in LogHelper.pc @ONLY)
 target_include_directories(LogHelper PRIVATE include)
 
 install(TARGETS LogHelper
@@ -125,24 +125,28 @@ if (NOT SERVER_PORT)
     set(SERVER_PORT 1024)
 endif ()
 
+########################################################################################################################
+# Installation process
+set(INSTALL_SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install_scripts)
+
 set(RADIATION_CONF_FILE radiation-benchmarks.conf)
-configure_file(${RADIATION_CONF_FILE}.in ${RADIATION_CONF_FILE} @ONLY)
+configure_file(${INSTALL_SCRIPTS_DIR}/${RADIATION_CONF_FILE}.in ${RADIATION_CONF_FILE} @ONLY)
 add_definitions(-DCONFIG_FILE_PATH="/${CMAKE_INSTALL_SYSCONFDIR}/${RADIATION_CONF_FILE}")
 install(
         FILES ${CMAKE_BINARY_DIR}/${RADIATION_CONF_FILE}
         DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}
 )
 
-install(CODE "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createvarlogdir.sh ${CMAKE_INSTALL_LOCALSTATEDIR})")
+install(CODE "execute_process(COMMAND ${INSTALL_SCRIPTS_DIR}/createvarlogdir.sh ${CMAKE_INSTALL_LOCALSTATEDIR})")
 # uninstall target
 if (NOT TARGET uninstall)
     configure_file(
-            "${CMAKE_CURRENT_SOURCE_DIR}/Uninstall.cmake.in"
+            "${INSTALL_SCRIPTS_DIR}/Uninstall.cmake.in"
             "${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake"
             IMMEDIATE @ONLY)
 
     add_custom_target(uninstall
-            COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake)
+            COMMAND ${CMAKE_COMMAND} -P ${INSTALL_SCRIPTS_DIR}/Uninstall.cmake)
 endif ()
 
 ########################################################################################################################
