@@ -19,3 +19,6 @@ foreach (file ${files})
         message(STATUS "File $ENV{DESTDIR}${file} does not exist.")
     endif ()
 endforeach ()
+
+# Remove from sudoers file the added line
+execute_process(COMMAND @INSTALL_SCRIPTS_DIR@/post_uninstall.sh @SUDOERS_ADD@)

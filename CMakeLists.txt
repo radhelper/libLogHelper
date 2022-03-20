@@ -99,8 +99,11 @@ install(FILES ${CMAKE_BINARY_DIR}/LogHelper.pc DESTINATION ${CMAKE_INSTALL_DATAR
 
 # CONFIGURE log-helper.conf file #######################################
 # Path to the radiation-benchmarks repository
+set(HOME_DIR $ENV{HOME})
+
+# Set radiation-benchmarks directory to keep compatibility with older setup
 if (NOT RAD_BENCHS_INSTALL_DIR)
-    set(RAD_BENCHS_INSTALL_DIR $ENV{HOME}/radiation-benchmarks)
+    set(RAD_BENCHS_INSTALL_DIR ${HOME_DIR}/radiation-benchmarks)
 endif ()
 # Killall signal command to be sent to the SW watchdog
 if (NOT WATCHDOG_COMMANDS)
@@ -143,12 +146,21 @@ ProcessorCount(NUMBER_OF_PROCESSORS)
 configure_file(${INSTALL_SCRIPTS_DIR}/atBoot.sh.in atBoot.sh @ONLY)
 install(
         FILES ${CMAKE_BINARY_DIR}/atBoot.sh
-        DESTINATION $ENV{HOME}
+        DESTINATION ${HOME_DIR}
+)
+
+# Destination of the rc.local file
+configure_file(${INSTALL_SCRIPTS_DIR}/rc.local.in rc.local @ONLY)
+install(
+        FILES ${CMAKE_BINARY_DIR}/rc.local
+        DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}
 )
 
 # Post install script commands
+set(SUDOERS_ADD \"%admin\ ALL=NOPASSWD:\ /sbin/halt,\ /sbin/reboot,\ /sbin/poweroff\")
 install(CODE
-        "execute_process(COMMAND ${INSTALL_SCRIPTS_DIR}/post_install.sh ${CMAKE_INSTALL_LOCALSTATEDIR} $ENV{HOME})")
+        "execute_process(COMMAND ${INSTALL_SCRIPTS_DIR}/post_install.sh
+        ${CMAKE_INSTALL_LOCALSTATEDIR} ${HOME_DIR} ${SUDOERS_ADD})")
 # uninstall target
 if (NOT TARGET uninstall)
     configure_file(
