@@ -128,7 +128,7 @@ endif ()
 ########################################################################################################################
 # Installation process
 set(INSTALL_SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install_scripts)
-
+# configuration file that will be read by the library
 set(RADIATION_CONF_FILE radiation-benchmarks.conf)
 configure_file(${INSTALL_SCRIPTS_DIR}/${RADIATION_CONF_FILE}.in ${RADIATION_CONF_FILE} @ONLY)
 add_definitions(-DCONFIG_FILE_PATH="/${CMAKE_INSTALL_SYSCONFDIR}/${RADIATION_CONF_FILE}")
@@ -137,7 +137,18 @@ install(
         DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}
 )
 
-install(CODE "execute_process(COMMAND ${INSTALL_SCRIPTS_DIR}/createvarlogdir.sh ${CMAKE_INSTALL_LOCALSTATEDIR})")
+# Destination of the atBoot.sh file
+include(ProcessorCount)
+ProcessorCount(NUMBER_OF_PROCESSORS)
+configure_file(${INSTALL_SCRIPTS_DIR}/atBoot.sh.in atBoot.sh @ONLY)
+install(
+        FILES ${CMAKE_BINARY_DIR}/atBoot.sh
+        DESTINATION $ENV{HOME}
+)
+
+# Post install script commands
+install(CODE
+        "execute_process(COMMAND ${INSTALL_SCRIPTS_DIR}/post_install.sh ${CMAKE_INSTALL_LOCALSTATEDIR} $ENV{HOME})")
 # uninstall target
 if (NOT TARGET uninstall)
     configure_file(
@@ -146,7 +157,7 @@ if (NOT TARGET uninstall)
             IMMEDIATE @ONLY)
 
     add_custom_target(uninstall
-            COMMAND ${CMAKE_COMMAND} -P ${INSTALL_SCRIPTS_DIR}/Uninstall.cmake)
+            COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake)
 endif ()
 
 ########################################################################################################################
