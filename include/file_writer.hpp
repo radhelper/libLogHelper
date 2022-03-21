@@ -23,8 +23,6 @@ namespace log_helper {
         virtual bool write(const std::string &buffer) = 0;
 
         virtual std::string get_file_path() = 0;
-
-        void set_ecc_status(bool ecc);
     };
 
     /**
@@ -34,7 +32,7 @@ namespace log_helper {
     protected:
         std::string file_path;
     public:
-        explicit LocalFile(std::string file_path);
+        explicit LocalFile(std::string file_path, const bool is_ecc_enabled);
 
         bool write(const std::string &buffer) override;
 
@@ -51,7 +49,7 @@ namespace log_helper {
         int32_t client_socket;
         struct sockaddr_in server_address;
     public:
-        UDPFile(std::string server_ip, int32_t port);
+        UDPFile(std::string server_ip, int32_t port, const bool is_ecc_enabled);
 
         bool write(const std::string &buffer) override;
 
@@ -65,7 +63,8 @@ namespace log_helper {
     class LocalAndUDPFile : public LocalFile, public UDPFile {
     public:
 
-        LocalAndUDPFile(const std::string &file_path, const std::string &server_ip, int32_t port);
+        LocalAndUDPFile(const std::string &file_path, const std::string &server_ip, int32_t port,
+                        const bool is_ecc_enabled);
 
         bool write(const std::string &buffer) final;
 

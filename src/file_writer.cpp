@@ -8,15 +8,12 @@ namespace log_helper {
 #define ECC_ENABLED 0xE
 #define ECC_DISABLED 0xD
 
-    void FileBase::set_ecc_status(const bool ecc) {
-        this->is_ecc_enabled = ecc;
-    }
-
     /**
      * Only local file writing
      */
-    LocalFile::LocalFile(std::string file_path) {
+    LocalFile::LocalFile(std::string file_path, const bool is_ecc_enabled) {
         this->file_path = std::move(file_path);
+        this->is_ecc_enabled = is_ecc_enabled;
         std::ofstream output(this->file_path, std::ios::app);
         if (output.fail()) {
             EXCEPTION_MESSAGE("[ERROR in create_log_file(char *)] Unable to open file " + this->file_path);
@@ -43,8 +40,10 @@ namespace log_helper {
     /**
      * Networking file writing
      */
-    UDPFile::UDPFile(std::string server_ip, const int32_t port)
+    UDPFile::UDPFile(std::string server_ip, const int32_t port, const bool is_ecc_enabled)
             : server_ip(std::move(server_ip)), port(port), server_address({}) {
+        this->is_ecc_enabled = is_ecc_enabled;
+
         //  Prepare our context and socket
         // Filling server information
         this->client_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -84,8 +83,9 @@ namespace log_helper {
     /**
      * To use both methods
      */
-    LocalAndUDPFile::LocalAndUDPFile(const std::string &file_path, const std::string &server_ip, const int32_t port)
-            : LocalFile(file_path), UDPFile(server_ip, port) {
+    LocalAndUDPFile::LocalAndUDPFile(const std::string &file_path, const std::string &server_ip, const int32_t port,
+                                     const bool is_ecc_enabled)
+            : LocalFile(file_path, is_ecc_enabled), UDPFile(server_ip, port, is_ecc_enabled) {
         // Send the file path to have a reference on the server
         UDPFile::write("#LOGFILE " + this->file_path);
     }

@@ -144,29 +144,29 @@ namespace log_helper {
     }
 
     template<int logging_t>
-    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_path, const bool is_ecc_enabled) {
         THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, USE: ONLY_LOCAL=0, UDP_ONLY=1, or LOCAL_AND_UDP=2");
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path) {
-        return std::make_shared<LocalFile>(log_file_path);
+    std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path, const bool is_ecc_enabled) {
+        return std::make_shared<LocalFile>(log_file_path, is_ecc_enabled);
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path, const bool is_ecc_enabled) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
-        return std::make_shared<UDPFile>(server_ip, server_port);
+        return std::make_shared<UDPFile>(server_ip, server_port, is_ecc_enabled);
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path, const bool is_ecc_enabled) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
-        return std::make_shared<LocalAndUDPFile>(log_file_path, server_ip, server_port);
+        return std::make_shared<LocalAndUDPFile>(log_file_path, server_ip, server_port, is_ecc_enabled);
     }
 
     int32_t start_log_file(const std::string &benchmark_name, const std::string &test_info) {
@@ -182,10 +182,9 @@ namespace log_helper {
         auto date_fmt = "%Y_%m_%d_%H_%M_%S";
         ss << std::put_time(std::localtime(&in_time_t), date_fmt);
         auto ecc = "OFF";
-        auto ecc_status = false;
-        if (check_ecc_status()) {
+        auto is_ecc_enabled = check_ecc_status();
+        if (is_ecc_enabled) {
             ecc = "ON";
-            ecc_status = true;
         }
         char host[HOST_NAME_MAX] = "hostnameunknown";
         if (gethostname(host, HOST_NAME_MAX) != 0) {
@@ -195,13 +194,12 @@ namespace log_helper {
         auto log_file_path = configuration_parameters[LOG_DIR_KEY] + "/" +
                              ss.str() + "_" + benchmark_name + "_ECC_" + ecc + "_" + host + ".log";
         DEBUG_MESSAGE("Log file path " + log_file_path);
-        file_writer_ptr = make_file_writer<LOGGING_TYPE>(log_file_path);
-
-        file_writer_ptr->set_ecc_status(ecc_status);
+        file_writer_ptr = make_file_writer<LOGGING_TYPE>(log_file_path, is_ecc_enabled);
 
         bool file_creation_outcome = file_writer_ptr->write("#HEADER " + test_info + "\n");
         ss.str("");
-        ss << std::put_time(std::localtime(&in_time_t), "#BEGIN Y:%Y M:%m D:%d Time:%H:%M:%S") << std::endl;
+        ss << std::put_time(std::localtime(&in_time_t), "#BEGIN Y:%Y M:%m D:%d Time:%H:%M:%S")
+           << std::endl;
         file_creation_outcome &= file_writer_ptr->write(ss.str());
 
         update_timestamp();
