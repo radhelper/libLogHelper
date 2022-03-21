@@ -5,8 +5,8 @@
 #include "file_writer.hpp"
 
 namespace log_helper {
-    void FileBase::set_ecc_status(const std::uint8_t ecc) {
-        this->ecc_status = ecc;
+    void FileBase::set_ecc_status(const bool ecc) {
+        this->is_ecc_enabled = ecc;
     }
 
     /**
@@ -56,15 +56,12 @@ namespace log_helper {
     }
 
     bool UDPFile::write(const std::string &buffer) {
-        if (buffer.size() > UDP_MESSAGE_LENGTH - 1) {
-            THROW_EXCEPTION("[Size of the message extrapolates the maximum size of UDP message length (" +
-                            std::to_string(UDP_MESSAGE_LENGTH) +
-                            "), if you want you can set a larger size on Cmake configs.]");
-        }
-        std::vector<std::uint8_t> new_buffer(UDP_MESSAGE_LENGTH, 0);
-        new_buffer[0] = this->ecc_status;
-        std::copy(buffer.begin(), buffer.end(), new_buffer.begin() + 1);
-        if (sendto(
+            char ecc = 0x00;
+            if (this->is_ecc_enabled){
+                ecc = 0xFF;
+            }
+            std::string new_buffer = ecc + buffer;
+            if (sendto(
                 this->client_socket,
                 new_buffer.data(),
                 new_buffer.size(),
@@ -81,9 +78,8 @@ namespace log_helper {
         return this->server_ip;
     }
 
-
     /**
-     * To use both methods TODO: NOT TESTED
+     * To use both methods
      */
     LocalAndUDPFile::LocalAndUDPFile(const std::string &file_path, const std::string &server_ip, const int32_t port)
             : LocalFile(file_path), UDPFile(server_ip, port) {

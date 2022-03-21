@@ -182,10 +182,10 @@ namespace log_helper {
         auto date_fmt = "%Y_%m_%d_%H_%M_%S";
         ss << std::put_time(std::localtime(&in_time_t), date_fmt);
         auto ecc = "OFF";
-        std::uint8_t ecc_status = 0;
+        auto ecc_status = false;
         if (check_ecc_status()) {
             ecc = "ON";
-            ecc_status = 1;
+            ecc_status = true;
         }
         char host[HOST_NAME_MAX] = "hostnameunknown";
         if (gethostname(host, HOST_NAME_MAX) != 0) {
