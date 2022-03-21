@@ -59,12 +59,12 @@ namespace log_helper {
     }
 
     bool UDPFile::write(const std::string &buffer) {
-            char ecc = ECC_ENABLED;
-            if (this->is_ecc_enabled){
-                ecc = ECC_DISABLED;
-            }
-            std::string new_buffer = ecc + buffer;
-            if (sendto(
+        char ecc = ECC_DISABLED;
+        if (this->is_ecc_enabled) {
+            ecc = ECC_ENABLED;
+        }
+        std::string new_buffer = ecc + buffer;
+        if (sendto(
                 this->client_socket,
                 new_buffer.data(),
                 new_buffer.size(),
