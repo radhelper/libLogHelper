@@ -5,6 +5,9 @@
 #include "file_writer.hpp"
 
 namespace log_helper {
+#define ECC_ENABLED 0xEE
+#define ECC_DISABLED 0xED
+
     void FileBase::set_ecc_status(const bool ecc) {
         this->is_ecc_enabled = ecc;
     }
@@ -56,9 +59,9 @@ namespace log_helper {
     }
 
     bool UDPFile::write(const std::string &buffer) {
-            char ecc = 0x00;
+            char ecc = ECC_ENABLED;
             if (this->is_ecc_enabled){
-                ecc = 0xFF;
+                ecc = ECC_DISABLED;
             }
             std::string new_buffer = ecc + buffer;
             if (sendto(
