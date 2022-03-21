@@ -17,8 +17,6 @@
 
 namespace log_helper {
     class FileBase {
-    protected:
-        bool is_ecc_enabled;
     public:
         virtual bool write(const std::string &buffer) = 0;
 
@@ -32,7 +30,7 @@ namespace log_helper {
     protected:
         std::string file_path;
     public:
-        explicit LocalFile(std::string file_path, const bool is_ecc_enabled);
+        explicit LocalFile(std::string file_path);
 
         bool write(const std::string &buffer) override;
 
@@ -48,6 +46,7 @@ namespace log_helper {
         int32_t port;
         int32_t client_socket;
         struct sockaddr_in server_address;
+        bool is_ecc_enabled;
     public:
         UDPFile(std::string server_ip, int32_t port, const bool is_ecc_enabled);
 

@@ -150,7 +150,7 @@ namespace log_helper {
 
     template<>
     std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path, const bool is_ecc_enabled) {
-        return std::make_shared<LocalFile>(log_file_path, is_ecc_enabled);
+        return std::make_shared<LocalFile>(log_file_path);
     }
 
     template<>
