@@ -157,7 +157,7 @@ install(
 )
 
 # Post install script commands
-set(SUDOERS_ADD \"%admin\ ALL=NOPASSWD:\ /sbin/halt,\ /sbin/reboot,\ /sbin/poweroff\")
+set(SUDOERS_ADD \"$ENV{USER}\ ALL=NOPASSWD:/sbin/reboot\")
 install(CODE
         "execute_process(COMMAND ${INSTALL_SCRIPTS_DIR}/post_install.sh
         ${CMAKE_INSTALL_LOCALSTATEDIR} ${HOME_DIR} ${SUDOERS_ADD})")
