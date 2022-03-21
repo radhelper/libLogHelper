@@ -1,10 +1,10 @@
 #!/bin/bash
 # Perform any other operation that is necessary to your test at the boot step
 # such as ecc disable/enable, time sync, etc.
-
+NUMBER_OF_PROCESSORS=@NUMBER_OF_PROCESSORS@
 # Edit the following command to be compatible with your device
 # The following command works only on NVIDIA GPUs
-ECC_RETURN=$(/usr/bin/nvidia-smi --query-gpu=gpu_name,ecc.mode.current --format=csv,noheader 2>/tmp/trash)
+ECC_RETURN=$(/usr/bin/nvidia-smi --query-gpu=gpu_name,ecc.mode.current --format=csv,noheader 2>/dev/null)
 SUB='Enabled'
 if [[ "$ECC_RETURN" == *"$SUB"* ]]; then
   echo "1" > @ECC_INFO_FILE_DIR@
@@ -14,7 +14,7 @@ fi
 chmod ugo+r @ECC_INFO_FILE_DIR@
 
 # set mce check interval to short
-for((i=0; i < @NUMBER_OF_PROCESSORS@;i++))
+for((i=0; i < NUMBER_OF_PROCESSORS;i++))
 do
 	echo 10 > /sys/devices/system/machinecheck/machinecheck"$i"/check_interval;
 	echo 3 > /sys/devices/system/machinecheck/machinecheck"$i"/tolerant
