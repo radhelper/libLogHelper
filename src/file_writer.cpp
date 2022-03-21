@@ -5,8 +5,8 @@
 #include "file_writer.hpp"
 
 namespace log_helper {
-#define ECC_ENABLED 0xEE
-#define ECC_DISABLED 0xED
+#define ECC_ENABLED 0xE
+#define ECC_DISABLED 0xD
 
     void FileBase::set_ecc_status(const bool ecc) {
         this->is_ecc_enabled = ecc;
