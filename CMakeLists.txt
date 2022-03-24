@@ -83,8 +83,7 @@ include(GNUInstallDirs)
 set(CMAKE_BUILD_TYPE Release)
 
 set_target_properties(LogHelper PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(LogHelper PROPERTIES PUBLIC_HEADER include/log_helper.h)
-set_target_properties(LogHelper PROPERTIES PUBLIC_HEADER include/log_helper.hpp)
+set_target_properties(LogHelper PROPERTIES PUBLIC_HEADER "include/log_helper.h;include/log_helper.hpp")
 
 configure_file(cmake_install_scripts/LogHelper.pc.in LogHelper.pc @ONLY)
 target_include_directories(LogHelper PRIVATE include)
