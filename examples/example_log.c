@@ -26,7 +26,7 @@ int main() {
     // default is 1.
     // CAUTION: Avoid writing too much on disc/ethernet, this can break your test
     set_iter_interval_print(5);
-    char log_file_name[1024];
+    char log_file_name[1024] = "";
     get_log_file_name(log_file_name);
     printf("Starting sample benchmark in C, the log file is at %s\n", log_file_name);
 

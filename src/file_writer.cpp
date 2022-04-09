@@ -74,7 +74,7 @@ namespace log_helper {
     }
 
     std::string UDPFile::get_file_path() {
-        return this->server_ip;
+        return "SERVER_IP:" + this->server_ip + " SERVER_PORT:" + std::to_string(this->port);
     }
 
     /**
@@ -92,7 +92,7 @@ namespace log_helper {
     }
 
     std::string LocalAndUDPFile::get_file_path() {
-        return "LOCAL:" + this->file_path + " IP:" + this->server_ip;
+        return "LOCAL:" + this->file_path + " " + UDPFile::get_file_path();
     }
 
 } /*END NAMESPACE LOG_HELPER*/

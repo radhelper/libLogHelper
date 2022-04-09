@@ -82,9 +82,11 @@ int log_info_detail(const char *info_detail);
 void update_timestamp();
 
 /**
- * Return the name of the log file generated
+ * Stores the name of the log file generated in
+ * log_file_name, and returns the pointer to the
+ * same variable
  */
-void get_log_file_name(char *log_file_name);
+char* get_log_file_name(char *log_file_name);
 
 //end C++ macro section
 #ifdef __cplusplus

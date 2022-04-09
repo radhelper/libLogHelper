@@ -48,7 +48,7 @@ namespace log_helper {
         struct sockaddr_in server_address;
         bool is_ecc_enabled;
     public:
-        UDPFile(std::string server_ip, int32_t port, const bool is_ecc_enabled);
+        UDPFile(std::string server_ip, int32_t port, bool is_ecc_enabled);
 
         bool write(const std::string &buffer) override;
 
@@ -57,13 +57,13 @@ namespace log_helper {
     };
 
     /**
-     * To use both methods TODO: NOT TESTED
+     * To use both methods
      */
     class LocalAndUDPFile : public LocalFile, public UDPFile {
     public:
 
         LocalAndUDPFile(const std::string &file_path, const std::string &server_ip, int32_t port,
-                        const bool is_ecc_enabled);
+                        bool is_ecc_enabled);
 
         bool write(const std::string &buffer) final;
 

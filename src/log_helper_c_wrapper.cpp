@@ -64,9 +64,10 @@ void update_timestamp() {
     log_helper::update_timestamp();
 }
 
-void get_log_file_name(char *log_file_name) {
+char* get_log_file_name(char *log_file_name) {
     auto file_path = log_helper::get_log_file_name();
     std::copy(file_path.begin(), file_path.end(), log_file_name);
+    return log_file_name;
 }
 
 }

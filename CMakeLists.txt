@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Common CMake settings
-project(LogHelper LANGUAGES C CXX VERSION 1.0.0 DESCRIPTION "Log Helper for radiation experiments")
+project(LogHelper LANGUAGES C CXX VERSION 1.1.0 DESCRIPTION "Log Helper for radiation experiments")
 
 ########################################################################################################################
 #In many cases you will want to make sure that the required libraries are always found independent
@@ -25,11 +25,14 @@ if ("${isSystemDir}" STREQUAL "-1")
 endif ("${isSystemDir}" STREQUAL "-1")
 ########################################################################################################################
 
-set(CMAKE_C_STANDARD 11)
+#set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 14)
 
 # Selects between C++ and C backend
 option(WITH_CXX_BACKEND "To use C++ over C backend" ON)
+if (NOT WITH_CXX_BACKEND)
+    message(WARNING "Option for C backend was disabled on libLogHelper 1.1, using C++ backend")
+endif ()
 # Define debug feature
 option(WITH_DEBUG "To print debug information" ON)
 # PYTHON Wrapper
@@ -37,22 +40,16 @@ option(WITH_PYTHON_SUPPORT "To build the SWIG Python 3.8 wrapper" ON)
 
 # Include directories for the lib
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_library(
+        LogHelper
+        SHARED
+        src/log_helper.cpp
+        src/log_helper_c_wrapper.cpp
+        src/file_writer.cpp
+        include/log_helper.h
+        include/log_helper.hpp
+)
 
-if (WITH_CXX_BACKEND)
-    add_library(
-            LogHelper
-            SHARED
-            src/log_helper.cpp
-            src/log_helper_c_wrapper.cpp
-            src/file_writer.cpp
-    )
-else ()
-    add_library(
-            LogHelper
-            SHARED
-            src/log_helper.c
-    )
-endif ()
 ########################################################################################################################
 # Set the logging approach
 # UPDATE IF THERE IS CHANGES on common.hpp
@@ -127,6 +124,11 @@ if (NOT SERVER_PORT)
     set(SERVER_PORT 1024)
 endif ()
 
+# Set the log dir for the benchmarks
+# Default is /var/radiation-benchmarks
+if (NOT LOG_DIR)
+    set(LOG_DIR "/${CMAKE_INSTALL_LOCALSTATEDIR}")
+endif()
 ########################################################################################################################
 # Installation process
 set(INSTALL_SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install_scripts)
@@ -159,7 +161,7 @@ install(
 set(SUDOERS_ADD \"$ENV{USER}\ ALL=NOPASSWD:/sbin/reboot\")
 install(CODE
         "execute_process(COMMAND ${INSTALL_SCRIPTS_DIR}/post_install.sh
-        ${CMAKE_INSTALL_LOCALSTATEDIR} ${HOME_DIR} ${SUDOERS_ADD})")
+        ${LOG_DIR} ${HOME_DIR} ${SUDOERS_ADD})")
 # uninstall target
 if (NOT TARGET uninstall)
     configure_file(

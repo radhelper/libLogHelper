@@ -35,7 +35,7 @@ namespace log_helper {
     size_t iteration_number = 0;
     double kernel_time_acc = 0;
     double kernel_time = 0;
-    std::chrono::time_point<std::chrono::system_clock> it_time_start;
+    long long it_time_start;
 
     // Used to log max_error_per_iter details each iteration
     size_t log_error_detail_counter = 0;
@@ -44,6 +44,9 @@ namespace log_helper {
 
     // File writer
     std::shared_ptr<FileBase> file_writer_ptr;
+
+    // Default ECC status
+    auto is_ecc_enabled = false;
 
 //    auto float_output_format = std::scientific;
     auto float_output_format = std::fixed;
@@ -98,7 +101,10 @@ namespace log_helper {
                     auto value = ltrim(split_line[1]);
                     value = rtrim(value);
                     configuration_parameters[key] = value;
-                    DEBUG_MESSAGE("CONFIG_PARAMETER-KEY:" + key + " VALUE:" + value);
+                    std::string msg_str = "CONFIG_PARAMETER-KEY:";
+                    msg_str += key;
+                    msg_str += " VALUE:" + value;
+                    DEBUG_MESSAGE(msg_str);
                 }
             }
         } else {
@@ -126,10 +132,10 @@ namespace log_helper {
         // We only update the timestamp if we are using the local
 #if LOGGING_TYPE == LOCAL_ONLY
         auto signal_cmd = configuration_parameters[SIGNAL_CMD_KEY];
-        auto sys_ret = system(signal_cmd.c_str());
-        if (sys_ret != 0) {
-            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
-        }
+        __attribute__((unused)) auto sys_ret = system(signal_cmd.c_str());
+//        if (sys_ret != 0) {
+//            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
+//        }
 
         auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
         std::ofstream timestamp_file(timestamp_watchdog_path);
@@ -144,17 +150,17 @@ namespace log_helper {
     }
 
     template<int logging_t>
-    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_path, const bool is_ecc_enabled) {
+    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_path) {
         THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, USE: ONLY_LOCAL=0, UDP_ONLY=1, or LOCAL_AND_UDP=2");
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path, const bool is_ecc_enabled) {
+    std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path) {
         return std::make_shared<LocalFile>(log_file_path);
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path, const bool is_ecc_enabled) {
+    std::shared_ptr<FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
@@ -162,7 +168,7 @@ namespace log_helper {
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path, const bool is_ecc_enabled) {
+    std::shared_ptr<FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
@@ -181,10 +187,10 @@ namespace log_helper {
         // log example: 2021_11_15_22_08_25_cuda_trip_half_lava_ECC_OFF_fernando.log
         auto date_fmt = "%Y_%m_%d_%H_%M_%S";
         ss << std::put_time(std::localtime(&in_time_t), date_fmt);
-        auto ecc = "OFF";
-        auto is_ecc_enabled = check_ecc_status();
+        auto ecc_str = "OFF";
+        is_ecc_enabled = check_ecc_status();
         if (is_ecc_enabled) {
-            ecc = "ON";
+            ecc_str = "ON";
         }
         char host[HOST_NAME_MAX] = "hostnameunknown";
         if (gethostname(host, HOST_NAME_MAX) != 0) {
@@ -192,9 +198,9 @@ namespace log_helper {
         }
 
         auto log_file_path = configuration_parameters[LOG_DIR_KEY] + "/" +
-                             ss.str() + "_" + benchmark_name + "_ECC_" + ecc + "_" + host + ".log";
+                             ss.str() + "_" + benchmark_name + "_ECC_" + ecc_str + "_" + host + ".log";
         DEBUG_MESSAGE("Log file path " + log_file_path);
-        file_writer_ptr = make_file_writer<LOGGING_TYPE>(log_file_path, is_ecc_enabled);
+        file_writer_ptr = make_file_writer<LOGGING_TYPE>(log_file_path);
 
         bool file_creation_outcome = file_writer_ptr->write("#HEADER " + test_info + "\n");
         ss.str("");
@@ -210,13 +216,20 @@ namespace log_helper {
         update_timestamp();
         log_error_detail_counter = 0;
         log_info_detail_counter = 0;
-        it_time_start = std::chrono::system_clock::now();
+        // Get current time with native precision
+        auto now = std::chrono::system_clock::now();
+        // Convert time_point to signed integral type
+        it_time_start = now.time_since_epoch().count();
         return 0;
     }
 
     int32_t end_iteration() {
         update_timestamp();
-        std::chrono::duration<double> difference = std::chrono::system_clock::now() - it_time_start;
+        //stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
+        std::chrono::system_clock::time_point start_it_tp{
+            std::chrono::system_clock::duration{it_time_start}
+        };
+        std::chrono::duration<double> difference = std::chrono::system_clock::now() - start_it_tp;
         kernel_time = difference.count();
         kernel_time_acc += kernel_time;
 
@@ -315,7 +328,8 @@ namespace log_helper {
     int32_t log_error_detail(std::string error_detail) {
         bool file_write_outcome = false;
         if (log_error_detail_counter <= max_errors_per_iter) {
-            file_write_outcome = file_writer_ptr->write("#ERR " + error_detail + "\n");
+            error_detail = "#ERR " + error_detail + "\n";
+            file_write_outcome = file_writer_ptr->write(error_detail);
         }
         log_error_detail_counter++;
         return !file_write_outcome;
@@ -323,9 +337,9 @@ namespace log_helper {
 
     int32_t log_info_detail(std::string info_detail) {
         bool file_write_outcome = false;
-
         if (log_info_detail_counter <= max_infos_per_iter) {
-            file_write_outcome = file_writer_ptr->write("#INF " + info_detail + "\n");
+            info_detail = "#INF " + info_detail + "\n";
+            file_write_outcome = file_writer_ptr->write(info_detail);
         }
         log_info_detail_counter++;
         return !file_write_outcome;
