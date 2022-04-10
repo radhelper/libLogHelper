@@ -31,7 +31,7 @@ You can set some library functionalities on CMake:
 - default (/tmp/ecc-info-file.txt)>
 - -DSERVER_IP=<Server that will receive the messages IP (default 192.168.1.5)>
 - -DSERVER_PORT=<server port that will receive the messages (default 1024)
-
+- -DLOG_DIR=<path to where the logs will be saved> (default is /var)
 ```shell
 cd libLogHelper
 mkdir build && cd build
