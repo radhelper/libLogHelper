@@ -52,7 +52,7 @@ sudo make install
 sudo ldconfig
 ```
 
-To uninstall the library (/var/radiation-benchmarks/ path is not deleted)
+To uninstall the library (LOG_DIR/radiation-benchmarks/ path is not deleted)
 
 ```shell
 sudo make uninstall
