@@ -128,7 +128,7 @@ endif ()
 # Default is /var/radiation-benchmarks
 if (NOT LOG_DIR)
     set(LOG_DIR "/${CMAKE_INSTALL_LOCALSTATEDIR}")
-endif()
+endif ()
 ########################################################################################################################
 # Installation process
 set(INSTALL_SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install_scripts)
@@ -182,6 +182,8 @@ endif ()
 
 # Python wrapper
 if (WITH_PYTHON_SUPPORT)
+    message("-- Building with python support you'll need to install the following packages:
+    -- python3.8 python3.8-dev python3.8-distutils python3.8-venv swig")
     find_package(SWIG REQUIRED)
     include(UseSWIG)
     set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
@@ -193,7 +195,7 @@ if (WITH_PYTHON_SUPPORT)
             SOURCES python_wrapper/log_helper.i
             )
 
-    find_package(Python 3 COMPONENTS Interpreter Development.Module REQUIRED)
+    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
     set_property(
             TARGET log_helper
             PROPERTY INCLUDE_DIRECTORIES ${Python_INCLUDE_DIRS}
