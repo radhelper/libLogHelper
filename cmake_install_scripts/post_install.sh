@@ -7,7 +7,7 @@ SUDOERS_ADD=${3}
 
 RC_LOCAL_PATH=/etc/rc.local
 
-rad_path=/"${VAR_LOG_DIR}"/radiation-benchmarks
+rad_path="${VAR_LOG_DIR}"/radiation-benchmarks
 echo "-- Creating ${rad_path} dir"
 set -x
 sudo mkdir -p "${rad_path}"/log
