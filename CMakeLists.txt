@@ -182,7 +182,7 @@ endif ()
 
 # Python wrapper
 if (WITH_PYTHON_SUPPORT)
-    message("-- Building with python support you'll need to install the following packages:
+    message("-- Building with python support you need to install the following packages:
              -- python3.8 python3.8-dev python3.8-distutils python3.8-venv swig")
     find_package(SWIG REQUIRED)
     include(UseSWIG)
