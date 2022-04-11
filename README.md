@@ -8,6 +8,8 @@ benchmark source code.
 - CMake >=3.16
 - GCC with std=C11
 - SWIG for Python applications
+- Python >=3.8
+- Python libraries: python3.8-dev python3.8-distutils python3.8-venv
 
 # Getting started
 
@@ -23,12 +25,12 @@ You can set some library functionalities on CMake:
 - -DWITH_PYTHON_SUPPORT=OFF to disable Python 3.8 wrapper building
 - -DWITH_DEBUG=OFF to disable debug printing information
 - -DRAD_BENCHS_INSTALL_DIR=\<path to rad benchmarks\> (default /home/carol/radiation-benchmarks)
-- -DWATCHDOG_COMMANDS=\<signal command to be sent to the SW watchdog\>
-  (default killall -q -USR1 killtestSignal-2.0.py; test_killtest_commands_json-2.0.py;; killall -q -USR1 killall -q
-  -USR1 python3;)
-- -DTMP_DIR=\<System tmp dir\> (default /tmp)
-- -DECC_INFO_FILE_DIR=\<Path to file that will contain 1/0 that refers to ECC enabled or disabled respectively.
-- default (/tmp/ecc-info-file.txt)\>
+- -DWATCHDOG_COMMANDS=\<signal command to be sent to the SW watchdog 
+     (default killall -q -USR1 killtestSignal-2.0.py; test_killtest_commands_json-2.0.py;; killall -q -USR1 killall -q
+  -USR1 python3;)\>
+- -DTMP_DIR=\<System tmp dir (default /tmp)\> 
+- -DECC_INFO_FILE_DIR=\<Path to file that will contain 1/0 that refers to ECC 
+enabled or disabled respectively (default /tmp/ecc-info-file.txt)\>
 - -DSERVER_IP=\<Server that will receive the messages IP (default 192.168.1.5)\>
 - -DSERVER_PORT=\<server port that will receive the messages (default 1024)\>
 - -DLOG_DIR=\<path to where the logs will be saved (default is /var)\>
@@ -47,6 +49,7 @@ If you wish to install in the whole system
 
 ```shell
 sudo make install
+sudo ldconfig
 ```
 
 To uninstall the library (/var/radiation-benchmarks/ path is not deleted)
