@@ -63,10 +63,11 @@ install_path>/lib
 (if not installed in the system)
 
 ```C
-// include the header in your C/C++ code
-#include
-"log_helper.h"
+// include the header in your C code
+#include "log_helper.h"
 ...
+// include the header in your C++ code
+#include "log_helper.hpp"
 ```
 
 ### Python Wrapper
