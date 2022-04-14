@@ -25,7 +25,7 @@ namespace log_helper {
     // Kernel total errors
     size_t kernels_total_errors = 0;
     // Used to print the log only for some iterations, equal 1 means print every iteration
-    int32_t iter_interval_print = 10;
+    int32_t iter_interval_print = 1;
 
     // Saves the last amount of error found for a specific iteration
     size_t last_iter_errors = 0;
