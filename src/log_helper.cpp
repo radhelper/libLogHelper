@@ -15,7 +15,7 @@
 namespace log_helper {
     // does not change over the time
     // Default path to the config file
-    std::unordered_map<std::string, std::string> configuration_parameters;
+    std::unordered_map <std::string, std::string> configuration_parameters;
 
     // Max errors that can be found for a single iteration
     // If more than max errors is found, exit the program
@@ -43,7 +43,7 @@ namespace log_helper {
     bool double_error_kill = true;
 
     // File writer
-    std::shared_ptr<FileBase> file_writer_ptr;
+    std::shared_ptr <FileBase> file_writer_ptr = nullptr;
 
     // Default ECC status
     auto is_ecc_enabled = false;
@@ -59,7 +59,7 @@ namespace log_helper {
         std::ifstream config_file(config_file_path);
         // split string
         auto split = [](std::string &string_to_split) {
-            std::vector<std::string> tokens;
+            std::vector <std::string> tokens;
             std::string token;
             std::istringstream token_stream(string_to_split);
             while (std::getline(token_stream, token, '=')) {
@@ -150,17 +150,17 @@ namespace log_helper {
     }
 
     template<int logging_t>
-    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_path) {
+    std::shared_ptr <FileBase> make_file_writer(std::string &log_file_path) {
         THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, USE: ONLY_LOCAL=0, UDP_ONLY=1, or LOCAL_AND_UDP=2");
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path) {
+    std::shared_ptr <FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path) {
         return std::make_shared<LocalFile>(log_file_path);
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path) {
+    std::shared_ptr <FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
@@ -168,11 +168,17 @@ namespace log_helper {
     }
 
     template<>
-    std::shared_ptr<FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path) {
+    std::shared_ptr <FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
         return std::make_shared<LocalAndUDPFile>(log_file_path, server_ip, server_port, is_ecc_enabled);
+    }
+
+    void check_file_writer() {
+        if (file_writer_ptr == nullptr) {
+            THROW_EXCEPTION("INVALID CONFIGURATION, FIRST CALL start_log_file before calling the other functions");
+        }
     }
 
     int32_t start_log_file(const std::string &benchmark_name, const std::string &test_info) {
@@ -225,9 +231,10 @@ namespace log_helper {
 
     int32_t end_iteration() {
         update_timestamp();
+        check_file_writer();
         //stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
         std::chrono::system_clock::time_point start_it_tp{
-            std::chrono::system_clock::duration{it_time_start}
+                std::chrono::system_clock::duration{it_time_start}
         };
         std::chrono::duration<double> difference = std::chrono::system_clock::now() - start_it_tp;
         kernel_time = difference.count();
@@ -252,6 +259,7 @@ namespace log_helper {
     }
 
     int32_t end_log_file() {
+        check_file_writer();
         if (!file_writer_ptr->write("#END\n")) {
             EXCEPTION_MESSAGE("[ERROR in log_string(char *)] Unable to open file");
             return 1;
@@ -264,6 +272,7 @@ namespace log_helper {
 
     int32_t log_error_count(size_t kernel_errors) {
         update_timestamp();
+        check_file_writer();
 
         if (kernel_errors > 0) {
             kernels_total_errors += kernel_errors;
@@ -306,6 +315,7 @@ namespace log_helper {
 
     int32_t log_info_count(size_t info_count) {
         update_timestamp();
+        check_file_writer();
 
         //There is no limit to info that aborts the code
         //"#CINF Ite:%lu KerTime:%f AccTime:%f KerInfo:%lu AccInfo:%lu\n",
@@ -326,6 +336,7 @@ namespace log_helper {
     }
 
     int32_t log_error_detail(std::string error_detail) {
+        check_file_writer();
         bool file_write_outcome = false;
         if (log_error_detail_counter <= max_errors_per_iter) {
             error_detail = "#ERR " + error_detail + "\n";
@@ -336,6 +347,7 @@ namespace log_helper {
     }
 
     int32_t log_info_detail(std::string info_detail) {
+        check_file_writer();
         bool file_write_outcome = false;
         if (log_info_detail_counter <= max_infos_per_iter) {
             info_detail = "#INF " + info_detail + "\n";
@@ -372,6 +384,7 @@ namespace log_helper {
 
 
     std::string get_log_file_name() {
+        check_file_writer();
         return file_writer_ptr->get_file_path();
     }
 } /*END NAMESPACE LOG_HELPER*/
