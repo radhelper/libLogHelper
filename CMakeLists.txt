@@ -195,7 +195,8 @@ if (WITH_PYTHON_SUPPORT)
             SOURCES python_wrapper/log_helper.i
             )
 
-    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+#    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+    find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
     set_property(
             TARGET log_helper
             PROPERTY INCLUDE_DIRECTORIES ${Python_INCLUDE_DIRS}
