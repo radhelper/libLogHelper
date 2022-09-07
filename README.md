@@ -81,3 +81,7 @@ import log_helper as lh
 lh.start_log_file("MyBenchmark", "Myheader")
 ...
 ```
+
+### How to use the library
+
+Some dummy source codes in examples/ directory contain the library's essential functions usage.
