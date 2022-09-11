@@ -1,9 +1,10 @@
 //
 // Created by fernando on 09/03/2022.
 //
+#include <cstring>
+
 #include "log_helper.h"
 #include "log_helper.hpp"
-
 extern "C" {
 /**
 * C wrapper
@@ -25,7 +26,7 @@ void disable_double_error_kill() {
 }
 
 int start_log_file(const char *benchmark_name, const char *test_info) {
-    if (benchmark_name == nullptr || test_info == nullptr){
+    if (benchmark_name == nullptr || test_info == nullptr) {
         return -1;
     }
     return log_helper::start_log_file(benchmark_name, test_info);
@@ -57,17 +58,22 @@ int log_error_detail(const char *error_detail) {
 }
 
 int log_info_detail(const char *info_detail) {
-    std::string info_detail_str = info_detail;
-    return log_helper::log_info_detail(info_detail_str);
+    if (info_detail == nullptr){
+        return -1;
+    }
+    return log_helper::log_info_detail(info_detail);
 }
 
 void update_timestamp() {
     log_helper::update_timestamp();
 }
 
-char* get_log_file_name(char *log_file_name) {
+char *get_log_file_name(char *log_file_name) {
     auto file_path = log_helper::get_log_file_name();
-    std::copy(file_path.begin(), file_path.end(), log_file_name);
+
+    if (log_file_name != nullptr && strlen(log_file_name) >= file_path.size()){
+        std::copy(file_path.begin(), file_path.end(), log_file_name);
+    }
     return log_file_name;
 }
 

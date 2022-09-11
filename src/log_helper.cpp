@@ -15,7 +15,7 @@
 namespace log_helper {
     // does not change over the time
     // Default path to the config file
-    std::unordered_map <std::string, std::string> configuration_parameters;
+    std::unordered_map<std::string, std::string> configuration_parameters;
 
     // Max errors that can be found for a single iteration
     // If more than max errors is found, exit the program
@@ -43,7 +43,7 @@ namespace log_helper {
     bool double_error_kill = true;
 
     // File writer
-    std::shared_ptr <FileBase> file_writer_ptr = nullptr;
+    std::shared_ptr<FileBase> file_writer_ptr = nullptr;
 
     // Default ECC status
     auto is_ecc_enabled = false;
@@ -59,7 +59,7 @@ namespace log_helper {
         std::ifstream config_file(config_file_path);
         // split string
         auto split = [](std::string &string_to_split) {
-            std::vector <std::string> tokens;
+            std::vector<std::string> tokens;
             std::string token;
             std::istringstream token_stream(string_to_split);
             while (std::getline(token_stream, token, '=')) {
@@ -150,17 +150,17 @@ namespace log_helper {
     }
 
     template<int logging_t>
-    std::shared_ptr <FileBase> make_file_writer(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer(std::string &log_file_path) {
         THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, USE: ONLY_LOCAL=0, UDP_ONLY=1, or LOCAL_AND_UDP=2");
     }
 
     template<>
-    std::shared_ptr <FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path) {
         return std::make_shared<LocalFile>(log_file_path);
     }
 
     template<>
-    std::shared_ptr <FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
@@ -168,7 +168,7 @@ namespace log_helper {
     }
 
     template<>
-    std::shared_ptr <FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path) {
+    std::shared_ptr<FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path) {
         // Load server ip and port
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);

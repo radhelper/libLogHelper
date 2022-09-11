@@ -187,7 +187,10 @@ if (WITH_PYTHON_SUPPORT)
     find_package(SWIG REQUIRED)
     include(UseSWIG)
     set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
-    find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
+
+    ##    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+    #    find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
+    find_package(Python 3 COMPONENTS Interpreter Development REQUIRED)
 
     set_property(SOURCE python_wrapper/log_helper.i PROPERTY CPLUSPLUS ON)
     set_property(SOURCE python_wrapper/log_helper.i PROPERTY SWIG_MODULE_NAME log_helper)
@@ -221,21 +224,16 @@ if (WITH_PYTHON_SUPPORT)
     #            OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
     #            SOURCES python_wrapper/log_helper.i
     #            )
-    #
-    ##    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
-    #    find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
     set_property(
             TARGET log_helper
             PROPERTY INCLUDE_DIRECTORIES ${Python_INCLUDE_DIRS}
             ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
 
-    set_property(
-            SOURCE python_wrapper/log_helper.i
-            PROPERTY SWIG_FLAGS "-py3" "-c++" "-cppext" "-builtin" "-extranative"
-    )
-#
-#    set_property(SOURCE python_wrapper/log_helper.i PROPERTY CPLUSPLUS ON)
+#    set_property(
+#            SOURCE python_wrapper/log_helper.i
+#            PROPERTY SWIG_FLAGS "-py3" "-c++" "-extranative"
+#    )
 
     TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
     TARGET_LINK_LIBRARIES(log_helper LogHelper)
