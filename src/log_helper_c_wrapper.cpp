@@ -25,9 +25,10 @@ void disable_double_error_kill() {
 }
 
 int start_log_file(const char *benchmark_name, const char *test_info) {
-    std::string bench_name_str = benchmark_name;
-    std::string test_info_str = test_info;
-    return log_helper::start_log_file(bench_name_str, test_info_str);
+    if (benchmark_name == nullptr || test_info == nullptr){
+        return -1;
+    }
+    return log_helper::start_log_file(benchmark_name, test_info);
 }
 
 int end_log_file() {

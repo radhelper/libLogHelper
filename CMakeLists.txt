@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Common CMake settings
-project(LogHelper LANGUAGES C CXX VERSION 1.1.0 DESCRIPTION "Log Helper for radiation experiments")
+project(LogHelper LANGUAGES C CXX VERSION 1.1.1 DESCRIPTION "Log Helper for radiation experiments")
 
 ########################################################################################################################
 #In many cases you will want to make sure that the required libraries are always found independent
@@ -187,16 +187,43 @@ if (WITH_PYTHON_SUPPORT)
     find_package(SWIG REQUIRED)
     include(UseSWIG)
     set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
+    find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
 
-    swig_add_library(log_helper
-            TYPE SHARED
+    set_property(SOURCE python_wrapper/log_helper.i PROPERTY CPLUSPLUS ON)
+    set_property(SOURCE python_wrapper/log_helper.i PROPERTY SWIG_MODULE_NAME log_helper)
+
+    swig_add_library(
+            log_helper
+            TYPE MODULE
             LANGUAGE python
             OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
             SOURCES python_wrapper/log_helper.i
-            )
+    )
+    add_library(${PROJECT_NAMESPACE}::log_helper ALIAS log_helper)
 
-#    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
-    find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
+    target_include_directories(log_helper
+            PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+            ${Python3_INCLUDE_DIRS}
+            )
+    set_property(TARGET log_helper PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES ON)
+
+    # note: Only for UNIX
+#    set_target_properties(log_helper PROPERTIES
+#            INSTALL_RPATH "$ORIGIN:$ORIGIN/../../${PYTHON_PROJECT}/.libs"
+#            )
+#    target_link_libraries(log_helper PRIVATE ${PROJECT_NAMESPACE}::log_helper)
+
+
+    #    swig_add_library(log_helper
+    #            TYPE SHARED
+    #            LANGUAGE python
+    #            OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    #            SOURCES python_wrapper/log_helper.i
+    #            )
+    #
+    ##    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+    #    find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
     set_property(
             TARGET log_helper
             PROPERTY INCLUDE_DIRECTORIES ${Python_INCLUDE_DIRS}
@@ -205,8 +232,10 @@ if (WITH_PYTHON_SUPPORT)
 
     set_property(
             SOURCE python_wrapper/log_helper.i
-            PROPERTY SWIG_FLAGS "-py3" "-builtin" "-extranative"
+            PROPERTY SWIG_FLAGS "-py3" "-c++" "-cppext" "-builtin" "-extranative"
     )
+#
+#    set_property(SOURCE python_wrapper/log_helper.i PROPERTY CPLUSPLUS ON)
 
     TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
     TARGET_LINK_LIBRARIES(log_helper LogHelper)

@@ -8,7 +8,7 @@
 #include <string>
 
 namespace log_helper {
-    int32_t start_log_file(const std::string &benchmark_name, const std::string &test_info);
+    int32_t start_log_file(std::string benchmark_name, std::string test_info);
 
     int32_t start_iteration();
 

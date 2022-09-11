@@ -27,7 +27,7 @@ def main():
     log_helper.set_iter_interval_print(5)
 
     # TODO: the empty string is needed for C++ backend, fix it in the future
-    print("Starting sample benchmark in Python 3, log file is", log_helper.get_log_file_name(" " * 1024))
+    print("Starting sample benchmark in Python 3, log file is", log_helper.get_log_file_name())
 
     # This is just an example of input. In a real scenario, we should load the data from a  file,
     # then we calculate nothing on the Device Under Test but the evaluation kernel
