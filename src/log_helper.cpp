@@ -181,7 +181,7 @@ namespace log_helper {
         }
     }
 
-    int32_t start_log_file(std::string benchmark_name, std::string test_info) {
+    int32_t start_log_file(std::string benchmark_name, std::string test_info) { // NOLINT(performance-unnecessary-value-param)
         // Necessary for all configurations (network or local)
         read_configuration_file();
 
