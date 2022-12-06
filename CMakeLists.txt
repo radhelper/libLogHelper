@@ -183,7 +183,7 @@ endif ()
 # Python wrapper
 if (WITH_PYTHON_SUPPORT)
     message("-- Building with python support, run the following command before run cmake:
-             -- sudo apt install python3.8 python3.8-dev python3.8-distutils python3.8-venv swig")
+             -- sudo apt install python3 python3-dev python3-distutils python3-venv swig")
     find_package(SWIG REQUIRED)
     include(UseSWIG)
     set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
