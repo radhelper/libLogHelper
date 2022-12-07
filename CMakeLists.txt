@@ -191,7 +191,7 @@ if (WITH_PYTHON_SUPPORT)
     set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 
     find_package(Python 3 COMPONENTS Interpreter Development REQUIRED)
-    list(APPEND CMAKE_SWIG_FLAGS "-py3" "-DPY3")
+    list(APPEND CMAKE_SWIG_FLAGS "-python" "-py3" "-DPY3")
 
     set_property(SOURCE python/log_helper.i PROPERTY CPLUSPLUS ON)
     set_property(SOURCE python/log_helper.i PROPERTY SWIG_MODULE_NAME log_helper)
@@ -218,9 +218,9 @@ if (WITH_PYTHON_SUPPORT)
             ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
 
-#    TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
-#    TARGET_LINK_LIBRARIES(log_helper LogHelper)
-#    find_program(PYTHON "python3")
+    TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
+    TARGET_LINK_LIBRARIES(log_helper LogHelper)
+    find_program(PYTHON "python3")
 #    set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/python/setup.py.in")
 #    set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
 #    set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/python/log_helper/__init__.py")
