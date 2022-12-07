@@ -182,7 +182,7 @@ endif ()
 
 # Python wrapper
 if (WITH_PYTHON_SUPPORT)
-    # TODO: fix this part with an approach similar to this github.com/Mizux/cmake-swig/blob/main/cmake/python.cmake
+    # TODO: fix this part with an approach similar to this https://github.com/Mizux/cmake-swig
     message("-- Building with python support, run the following command before run cmake:
              -- sudo apt install python3 python3-dev python3-distutils python3-venv swig")
     find_package(SWIG REQUIRED)
