@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Common CMake settings
-project(LogHelper LANGUAGES C CXX VERSION 1.1.1 DESCRIPTION "Log Helper for radiation experiments")
+SET(PACKAGE_VERSION 1.1.1)
+project(LogHelper LANGUAGES C CXX VERSION ${PACKAGE_VERSION} DESCRIPTION "Log Helper for radiation experiments")
 
 ########################################################################################################################
 #In many cases you will want to make sure that the required libraries are always found independent
@@ -31,12 +32,12 @@ set(CMAKE_CXX_STANDARD 14)
 # Selects between C++ and C backend
 option(WITH_CXX_BACKEND "To use C++ over C backend" ON)
 if (NOT WITH_CXX_BACKEND)
-    message(WARNING "Option for C backend was disabled on libLogHelper 1.1, using C++ backend")
+    message(WARNING "Option for C backend was disabled on libLogHelper ${PACKAGE_VERSION}, using C++ backend")
 endif ()
 # Define debug feature
 option(WITH_DEBUG "To print debug information" ON)
 # PYTHON Wrapper
-option(WITH_PYTHON_SUPPORT "To build the SWIG Python 3.8 wrapper" ON)
+option(WITH_PYTHON_SUPPORT "To build the SWIG Python 3 wrapper" ON)
 
 # Include directories for the lib
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -192,15 +193,15 @@ if (WITH_PYTHON_SUPPORT)
     find_package(Python 3 COMPONENTS Interpreter Development REQUIRED)
     list(APPEND CMAKE_SWIG_FLAGS "-py3" "-DPY3")
 
-    set_property(SOURCE python_wrapper/log_helper.i PROPERTY CPLUSPLUS ON)
-    set_property(SOURCE python_wrapper/log_helper.i PROPERTY SWIG_MODULE_NAME log_helper)
+    set_property(SOURCE python/log_helper.i PROPERTY CPLUSPLUS ON)
+    set_property(SOURCE python/log_helper.i PROPERTY SWIG_MODULE_NAME log_helper)
 
     swig_add_library(
             log_helper
             TYPE MODULE
             LANGUAGE python
             OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
-            SOURCES python_wrapper/log_helper.i
+            SOURCES python/log_helper.i
     )
     add_library(${PROJECT_NAMESPACE}::log_helper ALIAS log_helper)
 
@@ -217,8 +218,23 @@ if (WITH_PYTHON_SUPPORT)
             ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
 
-    TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
-    TARGET_LINK_LIBRARIES(log_helper LogHelper)
+#    TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
+#    TARGET_LINK_LIBRARIES(log_helper LogHelper)
+#    find_program(PYTHON "python3")
+#    set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/python/setup.py.in")
+#    set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
+#    set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/python/log_helper/__init__.py")
+#    set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build/timestamp")
+#
+#    configure_file(${SETUP_PY_IN} ${SETUP_PY})
+#    add_custom_command(OUTPUT ${OUTPUT}
+#            COMMAND ${PYTHON} ${SETUP_PY} build
+#            COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
+#            DEPENDS ${DEPS})
+#
+#    add_custom_target(target ALL DEPENDS ${OUTPUT})
+#
+#    install(CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install)")
 endif ()
 
 ########################################################################################################################
