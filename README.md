@@ -20,7 +20,7 @@ safe**.
 
 You can set some library functionalities on CMake:
 
-- -DLOGGING_TYPE=<logging approach> To set the logging approach, that can be LOCAL, UDP, LOCAL_AND_UPD (default is
+- -DLOGGING_TYPE=<logging approach> To set the logging approach, that can be LOCAL, UDP, LOCAL_AND_UDP (default is
   LOCAL).
 - -DWITH_PYTHON_SUPPORT=OFF to disable Python 3.8 wrapper building
 - -DWITH_DEBUG=OFF to disable debug printing information
