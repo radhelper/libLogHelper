@@ -9,7 +9,7 @@ benchmark source code.
 - GCC with std=C11
 - SWIG for Python applications
 - Python >=3.8
-- Python libraries: python3.8-dev python3.8-distutils python3.8-venv
+- Python libraries: python3-dev python3-distutils python3-venv
 
 # Getting started
 
