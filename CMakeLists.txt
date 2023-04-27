@@ -104,9 +104,7 @@ if (NOT RAD_BENCHS_INSTALL_DIR)
 endif ()
 # Killall signal command to be sent to the SW watchdog
 if (NOT WATCHDOG_COMMANDS)
-    set(WATCHDOG_COMMANDS "killall -q -USR1 killtestSignal-2.0.py")
-    set(WATCHDOG_COMMANDS "${WATCHDOG_COMMANDS}; killall -q -USR1 test_killtest_commands_json-2.0.py")
-    set(WATCHDOG_COMMANDS "${WATCHDOG_COMMANDS};")
+    set(WATCHDOG_COMMANDS "none")
 endif ()
 # System tmp dir
 if (NOT TMP_DIR)

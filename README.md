@@ -20,20 +20,29 @@ safe**.
 
 You can set some library functionalities on CMake:
 
-- -DLOGGING_TYPE=<logging approach> To set the logging approach, that can be LOCAL, UDP, LOCAL_AND_UDP (default is
-  LOCAL).
-- -DWITH_PYTHON_SUPPORT=OFF to disable Python 3.8 wrapper building
-- -DWITH_DEBUG=OFF to disable debug printing information
-- -DRAD_BENCHS_INSTALL_DIR=\<path to rad benchmarks\> (default /home/carol/radiation-benchmarks)
-- -DWATCHDOG_COMMANDS=\<signal command to be sent to the SW watchdog 
-     (default killall -q -USR1 killtestSignal-2.0.py; test_killtest_commands_json-2.0.py;; killall -q -USR1 killall -q
-  -USR1 python3;)\>
-- -DTMP_DIR=\<System tmp dir (default /tmp)\> 
+- -DLOGGING_TYPE=\<logging approach to set the logging approach, that can be LOCAL, UDP, LOCAL_AND_UDP.\>
+  - Default: LOCAL
+- -DWITH_PYTHON_SUPPORT=\<ON/OFF to disable Python 3.8 wrapper building\>
+  - Default: ON
+- -DWITH_DEBUG=\<ON/OFF to disable debug printing information\>
+  - Default: OFF
+- -DRAD_BENCHS_INSTALL_DIR=\<path to rad benchmarks\>
+  - Default: /home/carol/radiation-benchmarks
+- -DWATCHDOG_COMMANDS=\<signal command to be sent to the local SW watchdog\>
+  - If you don't want to execute the killall command for the local watchdog put the string "None" (any capitalization works for none). It will save time on the logging function. 
+  - Example: -DWATCHDOG_COMMANDS="killall -q -USR1 killtestSignal-2.0.py; killall -q -USR1 test_killtest_commands_json-2.0.py;"
+  - Default: none
+- -DTMP_DIR=\<System tmp dir\> 
+  - Default: /tmp
 - -DECC_INFO_FILE_DIR=\<Path to file that will contain 1/0 that refers to ECC 
-enabled or disabled respectively (default /tmp/ecc-info-file.txt)\>
-- -DSERVER_IP=\<Server that will receive the messages IP (default 192.168.1.5)\>
-- -DSERVER_PORT=\<server port that will receive the messages (default 1024)\>
-- -DLOG_DIR=\<path to where the logs will be saved (default is /var)\>
+enabled or disabled respectively\>
+  - Default: /tmp/ecc-info-file.txt
+- -DSERVER_IP=\<Server that will receive the messages IP\>
+  - Default: 192.168.1.5
+- -DSERVER_PORT=\<server port that will receive the messages\>
+  - Default: 1024
+- -DLOG_DIR=\<path to where the logs will be saved\>
+  - Default: /var
 ```shell
 cd libLogHelper
 mkdir build && cd build

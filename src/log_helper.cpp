@@ -131,13 +131,16 @@ namespace log_helper {
     void update_timestamp() {
         // We only update the timestamp if we are using the local
 #if LOGGING_TYPE == LOCAL_ONLY
-        auto signal_cmd = configuration_parameters[SIGNAL_CMD_KEY];
-        __attribute__((unused)) auto sys_ret = system(signal_cmd.c_str());
+        static const auto signal_cmd = configuration_parameters[SIGNAL_CMD_KEY];
+        static const auto run_signal = signal_cmd != "none";
+        if (run_signal) {
+            __attribute__((unused)) auto sys_ret = system(signal_cmd.c_str());
 //        if (sys_ret != 0) {
 //            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
 //        }
+        }
 
-        auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
+        static const auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
         std::ofstream timestamp_file(timestamp_watchdog_path);
         if (timestamp_file.good()) {
             auto now = std::chrono::system_clock::now();
