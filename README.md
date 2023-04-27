@@ -29,7 +29,6 @@ You can set some library functionalities on CMake:
 - -DRAD_BENCHS_INSTALL_DIR=\<path to rad benchmarks\>
   - Default: /home/carol/radiation-benchmarks
 - -DWATCHDOG_COMMANDS=\<signal command to be sent to the local SW watchdog\>
-  - If you don't want to execute the killall command for the local watchdog put the string "None" (any capitalization works for none). It will save time on the logging function. 
   - Example: -DWATCHDOG_COMMANDS="killall -q -USR1 killtestSignal-2.0.py; killall -q -USR1 test_killtest_commands_json-2.0.py;"
   - Default: none
 - -DTMP_DIR=\<System tmp dir\> 
