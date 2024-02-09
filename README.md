@@ -6,7 +6,7 @@ benchmark source code.
 # Dependencies
 
 - CMake >=3.16
-- GCC with std=C11
+- GCC with std=C17
 - SWIG for Python applications
 - Python >=3.8
 - Python libraries: python3-dev python3-distutils python3-venv

@@ -134,7 +134,7 @@ set(INSTALL_SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install_scripts)
 # configuration file that will be read by the library
 set(RADIATION_CONF_FILE radiation-benchmarks.conf)
 configure_file(${INSTALL_SCRIPTS_DIR}/${RADIATION_CONF_FILE}.in ${RADIATION_CONF_FILE} @ONLY)
-add_definitions(-DCONFIG_FILE_PATH="/${CMAKE_INSTALL_SYSCONFDIR}/${RADIATION_CONF_FILE}")
+add_definitions(-DCONFIG_FILE_PATH= "/${CMAKE_INSTALL_SYSCONFDIR}/${RADIATION_CONF_FILE}")
 install(
         FILES ${CMAKE_BINARY_DIR}/${RADIATION_CONF_FILE}
         DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}
@@ -184,7 +184,7 @@ if (WITH_PYTHON_SUPPORT)
     # TODO: fix this part with an approach similar to this https://github.com/Mizux/cmake-swig
     message("-- Building with python support, run the following command before run cmake:
              -- sudo apt install python3 python3-dev python3-distutils python3-venv swig")
-    find_package(SWIG REQUIRED)
+    find_package(SWIG "4.0.1" REQUIRED)
     include(UseSWIG)
     set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 
@@ -207,7 +207,7 @@ if (WITH_PYTHON_SUPPORT)
             PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/include
             ${Python3_INCLUDE_DIRS}
-            )
+    )
     set_property(TARGET log_helper PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES ON)
 
     set_property(
@@ -219,20 +219,20 @@ if (WITH_PYTHON_SUPPORT)
     TARGET_LINK_LIBRARIES(log_helper ${PYTHON_LIBRARIES})
     TARGET_LINK_LIBRARIES(log_helper LogHelper)
     find_program(PYTHON "python3")
-#    set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/python/setup.py.in")
-#    set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
-#    set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/python/log_helper/__init__.py")
-#    set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build/timestamp")
-#
-#    configure_file(${SETUP_PY_IN} ${SETUP_PY})
-#    add_custom_command(OUTPUT ${OUTPUT}
-#            COMMAND ${PYTHON} ${SETUP_PY} build
-#            COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
-#            DEPENDS ${DEPS})
-#
-#    add_custom_target(target ALL DEPENDS ${OUTPUT})
-#
-#    install(CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install)")
+    #    set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/python/setup.py.in")
+    #    set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
+    #    set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/python/log_helper/__init__.py")
+    #    set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build/timestamp")
+    #
+    #    configure_file(${SETUP_PY_IN} ${SETUP_PY})
+    #    add_custom_command(OUTPUT ${OUTPUT}
+    #            COMMAND ${PYTHON} ${SETUP_PY} build
+    #            COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
+    #            DEPENDS ${DEPS})
+    #
+    #    add_custom_target(target ALL DEPENDS ${OUTPUT})
+    #
+    #    install(CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install)")
 endif ()
 
 ########################################################################################################################
