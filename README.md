@@ -7,7 +7,7 @@ benchmark source code.
 
 - CMake >=3.16
 - GCC with std=C17
-- SWIG for Python applications
+- SWIG for Python applications >= 4.0.1
 - Python >=3.8
 - Python libraries: python3-dev python3-distutils python3-venv
 
