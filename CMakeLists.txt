@@ -134,7 +134,7 @@ set(INSTALL_SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install_scripts)
 # configuration file that will be read by the library
 set(RADIATION_CONF_FILE radiation-benchmarks.conf)
 configure_file(${INSTALL_SCRIPTS_DIR}/${RADIATION_CONF_FILE}.in ${RADIATION_CONF_FILE} @ONLY)
-add_definitions(-DCONFIG_FILE_PATH= "/${CMAKE_INSTALL_SYSCONFDIR}/${RADIATION_CONF_FILE}")
+add_definitions(-DCONFIG_FILE_PATH=\"/${CMAKE_INSTALL_SYSCONFDIR}/${RADIATION_CONF_FILE}\")
 install(
         FILES ${CMAKE_BINARY_DIR}/${RADIATION_CONF_FILE}
         DESTINATION /${CMAKE_INSTALL_SYSCONFDIR}
