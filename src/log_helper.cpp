@@ -135,20 +135,20 @@ namespace log_helper {
         static const auto run_signal = signal_cmd != "none";
         if (run_signal) {
             __attribute__((unused)) auto sys_ret = system(signal_cmd.c_str());
-//        if (sys_ret != 0) {
-//            EXCEPTION_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
+            if (sys_ret != 0) {
+                DEBUG_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
+            }
+        }
+/** Deprecated: Timestamps are righter updated by UDP messages or signals to local watchdogs **/
+//        static const auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
+//        std::ofstream timestamp_file(timestamp_watchdog_path);
+//        if (timestamp_file.good()) {
+//            auto now = std::chrono::system_clock::now();
+//            auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+//            auto value = now_ms.time_since_epoch();
+//            timestamp_file << value.count();
+//            timestamp_file.close();
 //        }
-        }
-
-        static const auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
-        std::ofstream timestamp_file(timestamp_watchdog_path);
-        if (timestamp_file.good()) {
-            auto now = std::chrono::system_clock::now();
-            auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
-            auto value = now_ms.time_since_epoch();
-            timestamp_file << value.count();
-            timestamp_file.close();
-        }
 #endif
     }
 
@@ -184,7 +184,8 @@ namespace log_helper {
         }
     }
 
-    int32_t start_log_file(std::string benchmark_name, std::string test_info) { // NOLINT(performance-unnecessary-value-param)
+    int32_t
+    start_log_file(std::string benchmark_name, std::string test_info) { // NOLINT(performance-unnecessary-value-param)
         // Necessary for all configurations (network or local)
         read_configuration_file();
 

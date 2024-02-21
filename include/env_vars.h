@@ -27,7 +27,8 @@
 #error "CONFIG_FILE_PATH not set check you CMake configurations"
 #endif
 
+/** Deprecated: Timestamps are righter updated by UDP messages or signals to local watchdogs **/
 // Location of timestamp file for software watchdog
-#define TIMESTAMP_FILE "timestamp.txt"
+//#define TIMESTAMP_FILE "timestamp.txt"
 
 #endif //LOGHELPER_ENV_VARS_H
