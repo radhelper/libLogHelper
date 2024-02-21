@@ -139,7 +139,7 @@ namespace log_helper {
                 DEBUG_MESSAGE("ERROR ON SYSTEM CMD " + signal_cmd);
             }
         }
-/** Deprecated: Timestamps are righter updated by UDP messages or signals to local watchdogs **/
+/** Deprecated: Timestamps are either updated by UDP messages or signals to local watchdogs **/
 //        static const auto timestamp_watchdog_path = configuration_parameters[VAR_DIR_KEY] + "/" + TIMESTAMP_FILE;
 //        std::ofstream timestamp_file(timestamp_watchdog_path);
 //        if (timestamp_file.good()) {

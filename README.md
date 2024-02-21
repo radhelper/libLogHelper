@@ -64,8 +64,7 @@ sudo ldconfig
 After the installation, the file /etc/rc.local will be created.
 This file will run a script called atBoot.sh, containing any additional configurations
 to be performed immediately after the boot process.
-You can find and edit the default atBoot.sh commands that are executed after installation
-in your HOME directory.
+After installation, you can find and edit the default atBoot.sh commands in your HOME directory.
 
 To uninstall the library (LOG_DIR/radiation-benchmarks/ path is not deleted)
 
