@@ -189,7 +189,7 @@ if (WITH_PYTHON_SUPPORT)
     set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 
     find_package(Python 3 COMPONENTS Interpreter Development REQUIRED)
-    list(APPEND CMAKE_SWIG_FLAGS "-python" "-py3" "-DPY3")
+    list(APPEND CMAKE_SWIG_FLAGS "-py3" "-DPY3")
 
     set_property(SOURCE python/log_helper.i PROPERTY CPLUSPLUS ON)
     set_property(SOURCE python/log_helper.i PROPERTY SWIG_MODULE_NAME log_helper)
