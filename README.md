@@ -26,13 +26,6 @@ You can set some library functionalities on CMake:
     - Default: ON
 - -DWITH_DEBUG=\<ON/OFF to disable debug printing information\>
     - Default: OFF
-- -DRAD_BENCHS_INSTALL_DIR=\<path to rad benchmarks\>
-    - Default: /home/carol/radiation-benchmarks
-- -DWATCHDOG_COMMANDS=\<signal command to be sent to the local software watchdog\>
-    - Example: -DWATCHDOG_COMMANDS="killall -q -USR1 watchdog1.py; killall -q -USR1 watchdog2.py;"
-    - Default: none
-- -DTMP_DIR=\<System tmp dir\>
-    - Default: /tmp
 - -DECC_INFO_FILE_DIR=\<Path to file that will contain 1/0 that refers to ECC
   enabled or disabled respectively\>
     - Default: /tmp/ecc-info-file.txt

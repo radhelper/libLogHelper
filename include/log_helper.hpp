@@ -32,7 +32,7 @@ namespace log_helper {
 
     void disable_double_error_kill();
 
-    void update_timestamp();
+    // void update_timestamp(); deprecated 12/2024
 
     std::string get_log_file_name();
 } /*END NAMESPACE LOG_HELPER*/

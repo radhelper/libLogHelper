@@ -13,8 +13,6 @@
 
 // directory that the logs will be saved locally
 #define LOG_DIR_KEY "logdir"
-// Command that log_helper lib will send to the watchdog
-#define SIGNAL_CMD_KEY "signalcmd"
 // Path to the configuration files that log helper will save
 #define VAR_DIR_KEY "vardir"
 // key to load ecc verification data
@@ -22,13 +20,14 @@
 // Config for UDP logging
 #define SERVER_IP_KEY "serverip"
 #define SERVER_PORT_KEY "serverport"
+// Define the logging type at the config file
+#define LOGGING_TYPE "loggingtype"
+// // Deprecated: Command that log_helper lib will send to the watchdog
+// #define SIGNAL_CMD_KEY "signalcmd"
 
 #ifndef CONFIG_FILE_PATH
 #error "CONFIG_FILE_PATH not set check you CMake configurations"
 #endif
 
-/** Deprecated: Timestamps are righter updated by UDP messages or signals to local watchdogs **/
-// Location of timestamp file for software watchdog
-//#define TIMESTAMP_FILE "timestamp.txt"
 
 #endif //LOGHELPER_ENV_VARS_H
