@@ -54,7 +54,7 @@ namespace log_helper {
         }
         this->server_address.sin_family = AF_INET;
         this->server_address.sin_port = htons(this->port);
-        if (inet_pton(AF_INET, this->server_ip.c_str(), &(this->server_address.sin_addr.s_addr)) == -1) {
+        if (inet_pton(AF_INET, this->server_ip.c_str(), &this->server_address.sin_addr.s_addr) == -1) {
             EXCEPTION_MESSAGE("[ERROR Unable to  convert IPv4/IPv6 addresses from text to binary form]");
         }
     }

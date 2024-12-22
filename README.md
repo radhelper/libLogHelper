@@ -65,33 +65,35 @@ To uninstall the library (LOG_DIR/radiation-benchmarks/ path is not deleted)
 sudo make uninstall
 ```
 
-Then to use you just have to build the benchmark with this library use -lLogHelper with -I<install_path>/include -L<
-install_path>/lib
-(if not installed in the system)
+## How to use the library
 
-```C
+
+Then to use you just have to build the benchmark with this library use -lLogHelper with -I<install_path>/include -L<
+install_path>/lib (if not installed in the system).
+Then include in your C/C++ code as follows:
+
+```C++
 // include the header in your C code
-#include
-"log_helper.h"
+#include "log_helper.h"
 ...
 // include the header in your C++ code
-#include
-"log_helper.hpp"
+#include "log_helper.hpp"
 ```
 
 ### Python Wrapper
 
-It is possible to use the Python 3.8 wrapper to use the library on Python apps. You have to set the path to the build
+It is possible to use the Python >=3.8 wrapper to use the library on Python apps. You have to set the path to the build
 folder, then just call the same name as:
 
 ```python
 import log_helper as lh
-
-lh.start_log_file("MyBenchmark", "Myheader")
 ...
 ```
 
-### How to use the library
+### Examples and docs
 
 Some dummy source codes in [examples/](https://github.com/radhelper/libLogHelper/tree/main/examples) directory contain
-the library's essential functions usage.
+the library's essential functions usage. 
+A description of the main libLogHelper functions can be found in 
+[the docs](https://github.com/radhelper/libLogHelper/tree/main/docs.md)
+

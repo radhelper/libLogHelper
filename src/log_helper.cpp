@@ -130,33 +130,34 @@ namespace log_helper {
         return false;
     }
 
-    template<int>
-    // ReSharper disable once CppParameterNeverUsed
     std::shared_ptr<FileBase> make_file_writer(std::string &log_file_path) {
-        THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, USE: ONLY_LOCAL=0, UDP_ONLY=1, or LOCAL_AND_UDP=2");
-    }
-
-    template<>
-    std::shared_ptr<FileBase> make_file_writer<LOCAL_ONLY>(std::string &log_file_path) {
-        return std::make_shared<LocalFile>(log_file_path);
-    }
-
-    template<>
-    // ReSharper disable once CppParameterNeverUsed
-    std::shared_ptr<FileBase> make_file_writer<UDP_ONLY>(std::string &log_file_path) {
-        // Load server ip and port
+        // THROW_EXCEPTION("INVALID LOG_HELPER CONFIGURATION, USE: ONLY_LOCAL=0, UDP_ONLY=1, or LOCAL_AND_UDP=2");
+        // define the logging method
+        const auto logging_type = static_cast<LoggingType>(std::stoi(configuration_parameters[LOGGING_TYPE]));
+        const auto network_config_exists = (
+            configuration_parameters.find(SERVER_IP_KEY) != configuration_parameters.end() &&
+            configuration_parameters.find(SERVER_PORT_KEY) != configuration_parameters.end()
+        );
+        if (!network_config_exists && logging_type != LOCAL_ONLY) {
+            THROW_EXCEPTION("The client does not have a local network configuration, set it on the config file");
+        }
         auto server_ip = configuration_parameters[SERVER_IP_KEY];
         auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
-        return std::make_shared<UDPFile>(server_ip, server_port, is_ecc_enabled);
+
+        // define the logging method
+        switch (logging_type) {
+            case LOCAL_ONLY:
+                return std::make_shared<LocalFile>(log_file_path);
+            case UDP_ONLY:
+                // Load server ip and port
+                return std::make_shared<UDPFile>(server_ip, server_port, is_ecc_enabled);
+            case LOCAL_AND_UDP:
+            default:
+                // Load server ip and port
+                return std::make_shared<LocalAndUDPFile>(log_file_path, server_ip, server_port, is_ecc_enabled);
+        }
     }
 
-    template<>
-    std::shared_ptr<FileBase> make_file_writer<LOCAL_AND_UDP>(std::string &log_file_path) {
-        // Load server ip and port
-        auto server_ip = configuration_parameters[SERVER_IP_KEY];
-        auto server_port = std::stoi(configuration_parameters[SERVER_PORT_KEY]);
-        return std::make_shared<LocalAndUDPFile>(log_file_path, server_ip, server_port, is_ecc_enabled);
-    }
 
     void check_file_writer() {
         if (file_writer_ptr == nullptr) {
@@ -191,21 +192,8 @@ namespace log_helper {
 
         auto log_file_path = configuration_parameters[LOG_DIR_KEY] + "/" +
                              ss.str() + "_" + benchmark_name + "_ECC_" + ecc_str + "_" + host + ".log";
-        // define the logging method
-        const auto logging_type = static_cast<LoggingType>(std::stoi(configuration_parameters[LOGGING_TYPE]));
 
-        switch (logging_type) {
-            case LOCAL_ONLY:
-                file_writer_ptr = make_file_writer<LOCAL_ONLY>(log_file_path);
-                break;
-            case UDP_ONLY:
-                file_writer_ptr = make_file_writer<UDP_ONLY>(log_file_path);
-                break;
-            case LOCAL_AND_UDP:
-            default:
-                file_writer_ptr = make_file_writer<LOCAL_AND_UDP>(log_file_path);
-                break;
-        }
+        file_writer_ptr = make_file_writer(log_file_path);
 
         DEBUG_MESSAGE("Log file path " + log_file_path);
 
