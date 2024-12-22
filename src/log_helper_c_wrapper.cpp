@@ -5,6 +5,7 @@
 
 #include "log_helper.h"
 #include "log_helper.hpp"
+
 extern "C" {
 /**
 * C wrapper
@@ -58,23 +59,25 @@ int log_error_detail(const char *error_detail) {
 }
 
 int log_info_detail(const char *info_detail) {
-    if (info_detail == nullptr){
+    if (info_detail == nullptr) {
         return -1;
     }
     return log_helper::log_info_detail(info_detail);
 }
 
-void update_timestamp() {
-    log_helper::update_timestamp();
-}
+// Deprecated 12/2024
+// void update_timestamp() {
+//     log_helper::update_timestamp();
+// }
 
 char *get_log_file_name(char *log_file_name) {
     auto file_path = log_helper::get_log_file_name();
 
-    if (log_file_name != nullptr && strlen(log_file_name) >= file_path.size()){
+    if (log_file_name != nullptr && strlen(log_file_name) >= file_path.size() + 1){
         std::copy(file_path.begin(), file_path.end(), log_file_name);
+        // Null-terminate the string
+        log_file_name[file_path.size()] = '\0';
     }
     return log_file_name;
 }
-
 }

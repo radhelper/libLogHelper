@@ -26,13 +26,6 @@ You can set some library functionalities on CMake:
     - Default: ON
 - -DWITH_DEBUG=\<ON/OFF to disable debug printing information\>
     - Default: OFF
-- -DRAD_BENCHS_INSTALL_DIR=\<path to rad benchmarks\>
-    - Default: /home/carol/radiation-benchmarks
-- -DWATCHDOG_COMMANDS=\<signal command to be sent to the local software watchdog\>
-    - Example: -DWATCHDOG_COMMANDS="killall -q -USR1 watchdog1.py; killall -q -USR1 watchdog2.py;"
-    - Default: none
-- -DTMP_DIR=\<System tmp dir\>
-    - Default: /tmp
 - -DECC_INFO_FILE_DIR=\<Path to file that will contain 1/0 that refers to ECC
   enabled or disabled respectively\>
     - Default: /tmp/ecc-info-file.txt
@@ -72,33 +65,35 @@ To uninstall the library (LOG_DIR/radiation-benchmarks/ path is not deleted)
 sudo make uninstall
 ```
 
-Then to use you just have to build the benchmark with this library use -lLogHelper with -I<install_path>/include -L<
-install_path>/lib
-(if not installed in the system)
+## How to use the library
 
-```C
+
+Then to use you just have to build the benchmark with this library use -lLogHelper with -I<install_path>/include -L<
+install_path>/lib (if not installed in the system).
+Then include in your C/C++ code as follows:
+
+```C++
 // include the header in your C code
-#include
-"log_helper.h"
+#include "log_helper.h"
 ...
 // include the header in your C++ code
-#include
-"log_helper.hpp"
+#include "log_helper.hpp"
 ```
 
 ### Python Wrapper
 
-It is possible to use the Python 3.8 wrapper to use the library on Python apps. You have to set the path to the build
+It is possible to use the Python >=3.8 wrapper to use the library on Python apps. You have to set the path to the build
 folder, then just call the same name as:
 
 ```python
 import log_helper as lh
-
-lh.start_log_file("MyBenchmark", "Myheader")
 ...
 ```
 
-### How to use the library
+### Examples and docs
 
 Some dummy source codes in [examples/](https://github.com/radhelper/libLogHelper/tree/main/examples) directory contain
-the library's essential functions usage.
+the library's essential functions usage. 
+A description of the main libLogHelper functions can be found in 
+[the docs](https://github.com/radhelper/libLogHelper/tree/main/docs.md)
+

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Common CMake settings
-SET(PACKAGE_VERSION 1.1.1)
+SET(PACKAGE_VERSION 2.0.0)
 project(LogHelper LANGUAGES C CXX VERSION ${PACKAGE_VERSION} DESCRIPTION "Log Helper for radiation experiments")
 
 ########################################################################################################################
@@ -54,20 +54,19 @@ add_library(
 ########################################################################################################################
 # Set the logging approach
 # UPDATE IF THERE IS CHANGES on common.hpp
-#    enum class LoggingType{
-#        LOCAL_ONLY = 0,
-#        UDP_ONLY,
-#        LOCAL_AND_UDP
-#    } ;
-if (NOT LOGGING_TYPE OR LOGGING_TYPE STREQUAL "LOCAL")
+# DEPRECATED: Setting at compile time logging type is now deprecated, LOGGING_TYPE will be set in the config file
+if (LOGGING_TYPE STREQUAL "LOCAL")
     message("-- Selecting LOCAL logging approach")
-    add_definitions(-DLOGGING_TYPE=0)
+    set(LOGGING_TYPE 0)
+    #    add_definitions(-DLOGGING_TYPE=0)
 elseif (LOGGING_TYPE STREQUAL "UDP")
     message("-- Selecting UDP logging approach")
-    add_definitions(-DLOGGING_TYPE=1)
-elseif (LOGGING_TYPE STREQUAL "LOCAL_AND_UDP")
+    #    add_definitions(-DLOGGING_TYPE=1)
+    set(LOGGING_TYPE 1)
+elseif (NOT LOGGING_TYPE OR LOGGING_TYPE STREQUAL "LOCAL_AND_UDP")
     message("-- Selecting LOCAL_AND_UPD logging approach")
-    add_definitions(-DLOGGING_TYPE=2)
+    #    add_definitions(-DLOGGING_TYPE=2)
+    set(LOGGING_TYPE 2)
 else ()
     message(FATAL_ERROR "INVALID LOGGING_TYPE CONFIGURATION, USE: LOCAL, UPD, LOCAL_AND_UDP")
 endif ()
@@ -98,18 +97,21 @@ install(FILES ${CMAKE_BINARY_DIR}/LogHelper.pc DESTINATION ${CMAKE_INSTALL_DATAR
 # Path to the radiation-benchmarks repository
 set(HOME_DIR $ENV{HOME})
 
-# Set radiation-benchmarks directory to keep compatibility with older setup
-if (NOT RAD_BENCHS_INSTALL_DIR)
-    set(RAD_BENCHS_INSTALL_DIR ${HOME_DIR}/radiation-benchmarks)
-endif ()
+# Deprecated: Removed support for the old setup
+## Set radiation-benchmarks directory to keep compatibility with older setup
+#if (NOT RAD_BENCHS_INSTALL_DIR)
+#    set(RAD_BENCHS_INSTALL_DIR ${HOME_DIR}/radiation-benchmarks)
+#endif ()
+# Deprecated: signal sending
 # Killall signal command to be sent to the SW watchdog
-if (NOT WATCHDOG_COMMANDS)
-    set(WATCHDOG_COMMANDS "none")
-endif ()
-# System tmp dir
-if (NOT TMP_DIR)
-    set(TMP_DIR /tmp)
-endif ()
+#if (NOT WATCHDOG_COMMANDS)
+#    set(WATCHDOG_COMMANDS "none")
+#endif ()
+## System tmp dir
+#if (NOT TMP_DIR)
+#    set(TMP_DIR /tmp)
+#endif ()
+
 # Path to file that will contains 1/0 that refers to ECC enabled or disabled respectively.
 if (NOT ECC_INFO_FILE_DIR)
     set(ECC_INFO_FILE_DIR /tmp/ecc-info-file.txt)

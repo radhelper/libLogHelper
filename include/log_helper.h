@@ -76,17 +76,18 @@ int log_error_detail(const char *error_detail);
  */
 int log_info_detail(const char *info_detail);
 
-/**
- * Update with current timestamp the file where the software watchdog watches
- */
-void update_timestamp();
+// Deprecated 12/2024
+// /**
+//  * Update with current timestamp the file where the software watchdog watches
+//  */
+// void update_timestamp();
 
 /**
  * Stores the name of the log file generated in
  * log_file_name, and returns the pointer to the
  * same variable
  */
-char* get_log_file_name(char *log_file_name);
+char *get_log_file_name(char *log_file_name);
 
 //end C++ macro section
 #ifdef __cplusplus
